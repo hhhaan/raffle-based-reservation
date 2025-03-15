@@ -1,39 +1,42 @@
-// 'use client';
-
-// import Image from 'next/image';
-// // import { createClient } from '@/src/shared/utils/supabase/client';
-// export const KakaoLoginButton = () => {
-//     // const supabase = createClient();
-
-//     const handleKakaoLogin = async () => {
-//         // const { data, error } = await supabase.auth.signInWithOAuth({
-//         //     provider: 'kakao',
-//         //     options: {
-//         //         // redirectTo: `${window.location.origin}/api/auth/callback`,
-//         //         redirectTo: 'http://localhost:3000/api/auth/callback',
-//         //     },
-//         // });
-//         // console.log(data, error);
-//     };
-//     return (
-//         <div>
-//             <Image src="/kakao.png" alt="kakao" width={200} height={200} onClick={handleKakaoLogin} />
-//         </div>
-//     );
-// };
-
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
+import { createClient } from '@/src/shared/utils/supabase/client';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export const KakaoLoginButton = () => {
-    const handleClick = () => {
-        console.log('clicked');
+    const supabase = createClient();
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const nextPath = searchParams.get('next') || '/';
+
+    const handleKakaoLogin = async () => {
+        try {
+            setIsLoading(true);
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'kakao',
+                options: {
+                    redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}`,
+                },
+            });
+            if (error) {
+                throw error;
+            }
+            router.push(data.url);
+        } catch (error) {
+            console.log(error);
+            alert('로그인에 실패했습니다. 다시 시도해주세요.');
+            router.push('/login');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <button
-            onClick={handleClick}
+            onClick={handleKakaoLogin}
             className="flex items-center justify-center w-full py-3 px-5 bg-[#FEE500] rounded-md hover:bg-[#FEE500]/90 transition-colors"
             style={{ minHeight: '48px' }}
         >
