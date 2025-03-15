@@ -3,7 +3,142 @@
 import { Layout } from '@/src/widgets';
 import { Clock, Users, Sparkles } from 'lucide-react';
 
+// 공통 카드 컴포넌트
+const RaffleCard = ({
+    item,
+    badgeText = '',
+    badgeColor = '',
+    iconElement = null,
+    statusText = '',
+    statusColor = '',
+    borderColor = '',
+}) => {
+    return (
+        <div className={`min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0 ${borderColor}`}>
+            <div className="relative">
+                <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300"></div>
+                {badgeText && (
+                    <div
+                        className={`absolute top-3 right-3 ${badgeColor} text-white text-xs font-bold px-2 py-1 rounded`}
+                    >
+                        {badgeText}
+                    </div>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                    <h3 className="font-bold text-white">{item.name}</h3>
+                    <p className="text-xs text-gray-200">
+                        {item.type} • {item.location}
+                    </p>
+                </div>
+            </div>
+            <div className="p-3">
+                <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center">
+                        {iconElement}
+                        <span className={`text-sm ${statusColor || 'text-gray-500'}`}>{statusText}</span>
+                    </div>
+                    <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">확률 {item.odds}</div>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm font-bold text-gray-900">{item.price}</span>
+                    <button className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">참여하기</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export function HomeScreen() {
+    // 래플 데이터
+    const deadlineRaffles = [
+        {
+            name: '오마카세 진',
+            type: '스시',
+            location: '강남',
+            endTime: '오늘 18:00',
+            odds: '1:42',
+            price: '3,000원',
+        },
+        {
+            name: '제로투레스',
+            type: '스테이크',
+            location: '성수',
+            endTime: '오늘 20:00',
+            odds: '1:28',
+            price: '5,000원',
+        },
+        {
+            name: '정식당',
+            type: '한식',
+            location: '압구정',
+            endTime: '내일 12:00',
+            odds: '1:76',
+            price: '2,000원',
+        },
+    ];
+
+    const popularRaffles = [
+        {
+            name: '타르틴 베이커리',
+            type: '베이커리',
+            location: '연남동',
+            participants: 1872,
+            odds: '1:187',
+            price: '1,000원',
+        },
+        {
+            name: '엘본더테이블',
+            type: '이탈리안',
+            location: '청담',
+            participants: 1543,
+            odds: '1:154',
+            price: '3,000원',
+        },
+        {
+            name: '뉴진스 팝업',
+            type: '팝업스토어',
+            location: '강남',
+            participants: 3821,
+            odds: '1:382',
+            price: '2,000원',
+        },
+        {
+            name: '토이스토리 전시',
+            type: '전시회',
+            location: '코엑스',
+            participants: 1320,
+            odds: '1:132',
+            price: '4,000원',
+        },
+    ];
+
+    const newRaffles = [
+        {
+            name: '루지 아이스크림',
+            type: '디저트',
+            location: '가로수길',
+            time: '10분 전',
+            odds: '1:21',
+            price: '2,000원',
+        },
+        {
+            name: '서울포레스트',
+            type: '프랑스 요리',
+            location: '용산',
+            time: '1시간 전',
+            odds: '1:32',
+            price: '5,000원',
+        },
+        {
+            name: '아티스트리',
+            type: '전시회',
+            location: '북촌',
+            time: '3시간 전',
+            odds: '1:45',
+            price: '3,000원',
+        },
+    ];
+
     return (
         <Layout>
             <div className="min-h-screen bg-gray-50">
@@ -29,10 +164,6 @@ export function HomeScreen() {
                         </div>
                     </div>
 
-                    {/* todo
-                스크롤 안 보이도록
-                */}
-
                     {/* 핫 래플 - 마감임박 */}
                     <div className="mb-8">
                         <div className="flex items-center justify-between mb-4">
@@ -44,68 +175,17 @@ export function HomeScreen() {
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
-                            {[
-                                {
-                                    name: '오마카세 진',
-                                    type: '스시',
-                                    location: '강남',
-                                    endTime: '오늘 18:00',
-                                    odds: '1:42',
-                                    price: '3,000원',
-                                },
-                                {
-                                    name: '제로투레스',
-                                    type: '스테이크',
-                                    location: '성수',
-                                    endTime: '오늘 20:00',
-                                    odds: '1:28',
-                                    price: '5,000원',
-                                },
-                                {
-                                    name: '정식당',
-                                    type: '한식',
-                                    location: '압구정',
-                                    endTime: '내일 12:00',
-                                    odds: '1:76',
-                                    price: '2,000원',
-                                },
-                            ].map((item, index) => (
-                                <div
+                            {deadlineRaffles.map((item, index) => (
+                                <RaffleCard
                                     key={index}
-                                    className="min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0 border border-red-100"
-                                >
-                                    <div className="relative">
-                                        <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300"></div>
-                                        <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                            마감임박
-                                        </div>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                            <h3 className="font-bold text-white">{item.name}</h3>
-                                            <p className="text-xs text-gray-200">
-                                                {item.type} • {item.location}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="p-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <div className="flex items-center">
-                                                <Clock className="w-4 h-4 text-red-500 mr-1" />
-                                                <span className="text-sm font-medium text-red-500">
-                                                    마감: {item.endTime}
-                                                </span>
-                                            </div>
-                                            <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">
-                                                확률 {item.odds}
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-bold text-gray-900">{item.price}</span>
-                                            <button className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">
-                                                참여하기
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    item={item}
+                                    badgeText="마감임박"
+                                    badgeColor="bg-red-500"
+                                    iconElement={<Clock className="w-4 h-4 text-red-500 mr-1" />}
+                                    statusText={`마감: ${item.endTime}`}
+                                    statusColor="font-medium text-red-500"
+                                    borderColor="border border-red-100"
+                                />
                             ))}
                         </div>
                     </div>
@@ -143,73 +223,13 @@ export function HomeScreen() {
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
-                            {[
-                                {
-                                    name: '타르틴 베이커리',
-                                    type: '베이커리',
-                                    location: '연남동',
-                                    participants: 1872,
-                                    odds: '1:187',
-                                    price: '1,000원',
-                                },
-                                {
-                                    name: '엘본더테이블',
-                                    type: '이탈리안',
-                                    location: '청담',
-                                    participants: 1543,
-                                    odds: '1:154',
-                                    price: '3,000원',
-                                },
-                                {
-                                    name: '뉴진스 팝업',
-                                    type: '팝업스토어',
-                                    location: '강남',
-                                    participants: 3821,
-                                    odds: '1:382',
-                                    price: '2,000원',
-                                },
-                                {
-                                    name: '토이스토리 전시',
-                                    type: '전시회',
-                                    location: '코엑스',
-                                    participants: 1320,
-                                    odds: '1:132',
-                                    price: '4,000원',
-                                },
-                            ].map((item, index) => (
-                                <div
+                            {popularRaffles.map((item, index) => (
+                                <RaffleCard
                                     key={index}
-                                    className="min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0"
-                                >
-                                    <div className="relative">
-                                        <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300"></div>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                            <h3 className="font-bold text-white">{item.name}</h3>
-                                            <p className="text-xs text-gray-200">
-                                                {item.type} • {item.location}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="p-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <div className="flex items-center">
-                                                <Users className="w-4 h-4 text-gray-500 mr-1" />
-                                                <span className="text-sm text-gray-500">
-                                                    {item.participants.toLocaleString()}명 참여
-                                                </span>
-                                            </div>
-                                            <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">
-                                                확률 {item.odds}
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-bold text-gray-900">{item.price}</span>
-                                            <button className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">
-                                                참여하기
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    item={item}
+                                    iconElement={<Users className="w-4 h-4 text-gray-500 mr-1" />}
+                                    statusText={`${item.participants.toLocaleString()}명 참여`}
+                                />
                             ))}
                         </div>
                     </div>
@@ -225,66 +245,17 @@ export function HomeScreen() {
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
-                            {[
-                                {
-                                    name: '루지 아이스크림',
-                                    type: '디저트',
-                                    location: '가로수길',
-                                    time: '10분 전',
-                                    odds: '1:21',
-                                    price: '2,000원',
-                                },
-                                {
-                                    name: '서울포레스트',
-                                    type: '프랑스 요리',
-                                    location: '용산',
-                                    time: '1시간 전',
-                                    odds: '1:32',
-                                    price: '5,000원',
-                                },
-                                {
-                                    name: '아티스트리',
-                                    type: '전시회',
-                                    location: '북촌',
-                                    time: '3시간 전',
-                                    odds: '1:45',
-                                    price: '3,000원',
-                                },
-                            ].map((item, index) => (
-                                <div
+                            {newRaffles.map((item, index) => (
+                                <RaffleCard
                                     key={index}
-                                    className="min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0 border border-blue-100"
-                                >
-                                    <div className="relative">
-                                        <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300"></div>
-                                        <div className="absolute top-3 right-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                            NEW
-                                        </div>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                            <h3 className="font-bold text-white">{item.name}</h3>
-                                            <p className="text-xs text-gray-200">
-                                                {item.type} • {item.location}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="p-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <div className="flex items-center">
-                                                <Sparkles className="w-4 h-4 text-blue-500 mr-1" />
-                                                <span className="text-sm text-blue-500">오픈: {item.time}</span>
-                                            </div>
-                                            <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">
-                                                확률 {item.odds}
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-bold text-gray-900">{item.price}</span>
-                                            <button className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">
-                                                참여하기
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    item={item}
+                                    badgeText="NEW"
+                                    badgeColor="bg-blue-500"
+                                    iconElement={<Sparkles className="w-4 h-4 text-blue-500 mr-1" />}
+                                    statusText={`오픈: ${item.time}`}
+                                    statusColor="text-blue-500"
+                                    borderColor="border border-blue-100"
+                                />
                             ))}
                         </div>
                     </div>
