@@ -61,19 +61,19 @@ export function ProfileScreen() {
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 mb-1">닉네임</span>
                             <div className="flex justify-between items-center">
-                                <span>{userInfo.name}</span>
+                                <span>{userInfo?.name}</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 mb-1">이메일</span>
-                            <span>{userInfo.email}</span>
+                            <span>{userInfo?.email}</span>
                         </div>
 
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500 mb-1">전화번호</span>
                             <div className="flex justify-between items-center">
-                                <span>{userInfo.phone}</span>
+                                <span>{userInfo?.phone}</span>
                                 <button className="text-indigo-600 text-sm">인증하기</button>
                             </div>
                         </div>
