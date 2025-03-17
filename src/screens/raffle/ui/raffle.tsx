@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Layout } from '@/src/widgets';
 import { ArrowLeft, Clock, Heart, Search, Filter } from 'lucide-react';
+import Image from 'next/image';
 
 export const RaffleScreen = () => {
     // 카테고리 상태 관리
@@ -21,8 +22,8 @@ export const RaffleScreen = () => {
             rafflePrice: '99,000원',
             discount: '99%',
             deadline: '3월 19일 (수) 11:00 당첨자 발표 예정',
-            image: '/api/placeholder/400/400',
-            timeLeft: '00:00:00',
+            image: '/img1.jpg',
+            timeLeft: '12:00:00',
         },
         {
             id: 2,
@@ -32,7 +33,7 @@ export const RaffleScreen = () => {
             rafflePrice: '1,000원',
             discount: '99%',
             deadline: '3월 19일 (수) 11:00 당첨자 발표 예정',
-            image: '/api/placeholder/400/400',
+            image: '/img1.jpg',
             timeLeft: '00:00:00',
         },
     ];
@@ -88,40 +89,7 @@ export const RaffleScreen = () => {
                 <div className="px-4">
                     <div className="space-y-4">
                         {raffles.map((raffle) => (
-                            <div key={raffle.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-                                {/* 이미지 섹션 */}
-                                <div className="relative">
-                                    {/* <img src={raffle.image} alt={raffle.name} className="w-full h-64 object-cover" /> */}
-                                    <div className="w-full h-64 object-cover"></div>
-                                    <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-3">
-                                        <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                                            {raffle.timeLeft}
-                                        </div>
-                                        <Heart className="w-6 h-6 text-white stroke-white fill-transparent hover:fill-white" />
-                                    </div>
-                                </div>
-
-                                {/* 정보 섹션 */}
-                                <div className="p-4">
-                                    <div className="mb-2">
-                                        <h3 className="text-base font-bold mb-1">{raffle.name}</h3>
-                                        <p className="text-sm text-gray-500">{raffle.brand}</p>
-                                    </div>
-
-                                    <div className="flex items-end mb-3">
-                                        <div className="line-through text-xs text-gray-500 mr-2">
-                                            {raffle.originalPrice}
-                                        </div>
-                                        <div className="text-base font-bold">{raffle.rafflePrice}</div>
-                                        <div className="text-red-500 text-sm ml-2">{raffle.discount}</div>
-                                    </div>
-
-                                    <div className="bg-gray-100 rounded p-2 text-xs text-center text-gray-600 flex items-center justify-center">
-                                        <Clock className="w-3 h-3 mr-1 text-indigo-600" />
-                                        {raffle.deadline}
-                                    </div>
-                                </div>
-                            </div>
+                            <RaffleCard key={raffle.id} raffle={raffle} />
                         ))}
                     </div>
                 </div>
@@ -134,5 +102,60 @@ export const RaffleScreen = () => {
                 </div>
             </div>
         </Layout>
+    );
+};
+
+interface Raffle {
+    id: number;
+    name: string;
+    brand: string;
+    originalPrice: string;
+    rafflePrice: string;
+    discount: string;
+    deadline: string;
+    image: string;
+    timeLeft: string;
+}
+
+const RaffleCard = ({ raffle }: { raffle: Raffle }) => {
+    return (
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* 이미지 섹션 */}
+            <div className="relative">
+                <Image
+                    src={raffle.image}
+                    alt={raffle.name}
+                    width={1000}
+                    height={256}
+                    className="w-full h-64 object-cover"
+                />
+                <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-3">
+                    <div className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">{raffle.timeLeft}</div>
+                    <Heart className="w-6 h-6 text-white stroke-white fill-transparent hover:fill-white" />
+                </div>
+            </div>
+
+            {/* 정보 섹션 */}
+            <div className="p-4">
+                <div className="mb-2">
+                    <h3 className="text-base font-bold mb-1">{raffle.name}</h3>
+                    <p className="text-sm text-gray-500">{raffle.brand}</p>
+                </div>
+
+                <div className="flex items-end mb-3">
+                    <div className="line-through text-xs text-gray-500 mr-2">{raffle.originalPrice}</div>
+                    <div className="text-base font-bold">{raffle.rafflePrice}</div>
+                    <div className="text-red-500 text-sm ml-2">{raffle.discount}</div>
+                </div>
+
+                <div className="bg-gray-100 rounded p-2 text-xs text-center text-gray-600 flex items-center justify-center">
+                    <Clock className="w-3 h-3 mr-1 text-indigo-600" />
+                    {raffle.deadline}
+                </div>
+                <button className="w-full mt-3 py-2 bg-indigo-600 rounded text-white font-medium hover:bg-indigo-700 transition">
+                    응모하기
+                </button>
+            </div>
+        </div>
     );
 };
