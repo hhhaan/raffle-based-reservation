@@ -2,11 +2,12 @@
 
 import { Navigation } from '../navigation';
 import { Bell, Menu } from 'lucide-react';
+import '@/src/shared/lib/vendor/vendor.ts';
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
+            {/* <Header /> */}
             <main className="pb-20">{children}</main>
             <Navigation />
         </div>
