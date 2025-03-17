@@ -1,9 +1,5 @@
-import { Layout } from '@/src/widgets';
+import { RaffleScreen } from '@/src/screens';
 
 export default function RafflePage() {
-    return (
-        <Layout>
-            <div>tlqk</div>
-        </Layout>
-    );
+    return <RaffleScreen />;
 }
