@@ -22,12 +22,12 @@ export function Navigation() {
                         검색
                     </span>
                 </button>
-                <button className="flex flex-col items-center">
+                <button className="flex flex-col items-center" onClick={() => router.push('/raffles')}>
                     <Ticket
-                        className={`h-5 w-5 mb-1 ${pathname === '/history' ? 'text-purple-600' : 'text-gray-500'}`}
+                        className={`h-5 w-5 mb-1 ${pathname === '/raffles' ? 'text-purple-600' : 'text-gray-500'}`}
                     />
-                    <span className={`text-sm ${pathname === '/history' ? 'text-purple-600' : 'text-gray-500'}`}>
-                        참여내역
+                    <span className={`text-sm ${pathname === '/raffles' ? 'text-purple-600' : 'text-gray-500'}`}>
+                        인기 래플
                     </span>
                 </button>
                 <button className="flex flex-col items-center" onClick={() => router.push('/profile')}>
