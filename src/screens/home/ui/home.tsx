@@ -1,9 +1,8 @@
 'use client';
 
-import { useUserStore } from '@/src/entities/user/model/store';
 import { Layout } from '@/src/widgets';
 import { Clock, Users, Sparkles } from 'lucide-react';
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // 공통 카드 컴포넌트
 const RaffleCard = ({
@@ -39,11 +38,13 @@ const RaffleCard = ({
                         {iconElement}
                         <span className={`text-sm ${statusColor || 'text-gray-500'}`}>{statusText}</span>
                     </div>
-                    <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">확률 {item.odds}</div>
+                    <div className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded">확률 {item.odds}</div>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900">{item.price}</span>
-                    <button className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">참여하기</button>
+                    <button className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-700 transition-colors">
+                        참여하기
+                    </button>
                 </div>
             </div>
         </div>
@@ -52,6 +53,7 @@ const RaffleCard = ({
 
 export function HomeScreen() {
     // 래플 데이터
+    const router = useRouter();
     const deadlineRaffles = [
         {
             name: '오마카세 진',
@@ -141,11 +143,6 @@ export function HomeScreen() {
         },
     ];
 
-    const { userInfo } = useUserStore();
-    useEffect(() => {
-        console.log(userInfo);
-    }, [userInfo]);
-
     return (
         <Layout>
             <div className="min-h-screen bg-gray-50">
@@ -153,17 +150,20 @@ export function HomeScreen() {
                 <div className="container mx-auto px-4 py-4 ">
                     {/* 진행중인 래플 배너 */}
                     <div className="mb-6">
-                        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl shadow-sm overflow-hidden">
+                        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl shadow-sm overflow-hidden">
                             <div className="relative p-6 text-white">
                                 <h2 className="text-2xl font-bold mb-2">지금 참여 가능한 래플</h2>
-                                <p className="mb-4">인기 맛집 예약의 새로운 기회!</p>
+                                <p className="mb-4">더 이상 불법 매크로와 경쟁하지 마세요!</p>
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <span className="bg-white text-purple-600 font-bold px-3 py-1 rounded-full text-sm">
+                                        <span className="bg-white text-indigo-600 font-bold px-3 py-1 rounded-full text-sm">
                                             진행중 32
                                         </span>
                                     </div>
-                                    <button className="bg-white text-purple-600 font-bold px-4 py-2 rounded-lg text-sm">
+                                    <button
+                                        className="bg-white text-indigo-600 font-bold px-4 py-2 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+                                        onClick={() => router.push('/raffles')}
+                                    >
                                         모두 보기
                                     </button>
                                 </div>
@@ -178,7 +178,7 @@ export function HomeScreen() {
                                 <h2 className="text-lg font-bold">🔥 마감 임박 래플</h2>
                                 <p className="text-sm text-gray-500">놓치지 마세요! 곧 마감됩니다</p>
                             </div>
-                            <button className="text-sm text-purple-600">더보기</button>
+                            <button className="text-sm text-indigo-600">더보기</button>
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
@@ -197,28 +197,6 @@ export function HomeScreen() {
                         </div>
                     </div>
 
-                    {/* 카테고리 버튼 */}
-                    <div className="mb-8">
-                        <h2 className="text-lg font-bold mb-3">카테고리</h2>
-                        <div className="grid grid-cols-4 gap-2">
-                            {[
-                                { name: '맛집', icon: '🍽️' },
-                                { name: '카페', icon: '☕' },
-                                { name: '팝업', icon: '🎪' },
-                                { name: '콘서트', icon: '🎵' },
-                                { name: '전시회', icon: '🎨' },
-                                { name: '클럽', icon: '🕺' },
-                                { name: '행사', icon: '🎉' },
-                                { name: '취미', icon: '🎮' },
-                            ].map((category) => (
-                                <div key={category.name} className="bg-white p-3 rounded-lg shadow-sm text-center">
-                                    <div className="text-xl mb-1">{category.icon}</div>
-                                    <div className="text-xs">{category.name}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* 인기 래플 */}
                     <div className="mb-8">
                         <div className="flex items-center justify-between mb-4">
@@ -226,7 +204,7 @@ export function HomeScreen() {
                                 <h2 className="text-lg font-bold">🏆 인기 래플</h2>
                                 <p className="text-sm text-gray-500">지금 가장 많이 참여하는 래플</p>
                             </div>
-                            <button className="text-sm text-purple-600">더보기</button>
+                            <button className="text-sm text-indigo-600">더보기</button>
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
@@ -248,7 +226,7 @@ export function HomeScreen() {
                                 <h2 className="text-lg font-bold">✨ 새로 오픈한 래플</h2>
                                 <p className="text-sm text-gray-500">방금 시작된 따끈따끈한 래플</p>
                             </div>
-                            <button className="text-sm text-purple-600">더보기</button>
+                            <button className="text-sm text-indigo-600">더보기</button>
                         </div>
 
                         <div className="flex overflow-x-auto space-x-4 pb-4">
