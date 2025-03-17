@@ -150,7 +150,7 @@ export function HomeScreen() {
         <Layout>
             <div className="min-h-screen bg-gray-50">
                 {/* 메인 콘텐츠 */}
-                <div className="container mx-auto px-4 py-4 pb-24">
+                <div className="container mx-auto px-4 py-4 ">
                     {/* 진행중인 래플 배너 */}
                     <div className="mb-6">
                         <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl shadow-sm overflow-hidden">
