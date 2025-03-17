@@ -1,7 +1,9 @@
 'use client';
 
+import { useUserStore } from '@/src/entities/user/model/store';
 import { Layout } from '@/src/widgets';
 import { Clock, Users, Sparkles } from 'lucide-react';
+import { useEffect } from 'react';
 
 // 공통 카드 컴포넌트
 const RaffleCard = ({
@@ -138,6 +140,11 @@ export function HomeScreen() {
             price: '3,000원',
         },
     ];
+
+    const { userInfo } = useUserStore();
+    useEffect(() => {
+        console.log(userInfo);
+    }, [userInfo]);
 
     return (
         <Layout>

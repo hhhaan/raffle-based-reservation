@@ -1,38 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { createClient } from '@/src/shared/utils/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useUserStore } from '@/src/entities/user/model/store';
 
 export const KakaoLoginButton = () => {
-    const supabase = createClient();
-    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { signInWithKakao, loading } = useUserStore();
 
     const nextPath = searchParams.get('next') || '/';
 
     const handleKakaoLogin = async () => {
-        try {
-            setIsLoading(true);
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: 'kakao',
-                options: {
-                    redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}`,
-                },
-            });
-            if (error) {
-                throw error;
-            }
-            router.push(data.url);
-        } catch (error) {
-            console.log(error);
-            alert('로그인에 실패했습니다. 다시 시도해주세요.');
-            router.push('/login');
-        } finally {
-            setIsLoading(false);
+        const redirectUrl = `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}`;
+        const loginUrl = await signInWithKakao(redirectUrl);
+        if (loginUrl) {
+            router.push(loginUrl);
         }
     };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <button
