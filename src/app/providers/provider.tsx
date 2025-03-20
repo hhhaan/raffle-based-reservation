@@ -1,3 +1,5 @@
+'use client';
+
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '@/src/shared/lib';
 import AuthProvider from './auth-provider';
