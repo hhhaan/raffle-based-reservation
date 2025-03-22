@@ -3,6 +3,7 @@
 import { Layout } from '@/src/widgets';
 import { Clock, Users, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 // 공통 카드 컴포넌트
 const RaffleCard = ({
@@ -52,6 +53,9 @@ const RaffleCard = ({
 };
 
 export function HomeScreen() {
+    useEffect(() => {
+        console.log(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`);
+    }, []);
     // 래플 데이터
     const router = useRouter();
     const deadlineRaffles = [
