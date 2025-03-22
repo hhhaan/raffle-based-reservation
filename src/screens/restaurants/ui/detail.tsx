@@ -2,7 +2,7 @@
 
 import { Layout } from '@/src/widgets';
 
-export function RestaurantScreen() {
+export function RestaurantDetailScreen() {
     // 정적인 UI만 표시하기 위한 임시 데이터
     const restaurantData = {
         name: '레스토랑 이름',

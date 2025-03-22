@@ -1,1 +1,2 @@
-export { RestaurantScreen } from './ui/restaurants';
+export { RestaurantsScreen } from './ui/screen';
+export { RestaurantDetailScreen } from './ui/detail';
