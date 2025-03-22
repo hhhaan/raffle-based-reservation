@@ -25,7 +25,7 @@ interface QueryResult {
 
 const GET_RESTAURANTS = gql`
     query GetRestaurants {
-        restaurantCollection(first: 1) {
+        restaurantCollection(first: 10) {
             edges {
                 node {
                     id

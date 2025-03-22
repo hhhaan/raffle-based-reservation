@@ -1,23 +1,32 @@
 'use client';
 
 import { Layout } from '@/src/widgets';
+import { useQuery, gql } from '@apollo/client';
 
-export function RestaurantDetailScreen() {
-    // 정적인 UI만 표시하기 위한 임시 데이터
-    const restaurantData = {
-        name: '레스토랑 이름',
-        rating: 4.5,
-        priceRange: '₩₩',
-        cuisine: '한식',
-        description: '레스토랑에 대한 상세한 설명이 이곳에 표시됩니다. 맛있는 음식과 좋은 분위기를 제공합니다.',
-        address: '서울시 강남구 테헤란로 123',
-        phone: '02-123-4567',
-        openingHours: '매일 11:00 - 22:00',
-        popularDishes: ['불고기', '된장찌개', '김치찌개', '비빔밥'],
-        facilities: ['주차', '와이파이', '단체석', '예약'],
-        images: [],
-        primaryImage: null,
-    };
+const GET_RESTAURANT = gql`
+    query GetRestaurant($id: Int!) {
+        restaurantCollection(filter: { id: { eq: $id } }) {
+            edges {
+                node {
+                    name
+                    description
+                }
+            }
+        }
+    }
+`;
+
+export function RestaurantDetailScreen({ id }: { id: string }) {
+    const { data, loading, error } = useQuery(GET_RESTAURANT, {
+        variables: { id: parseInt(id) },
+    });
+
+    if (loading) return <div>로딩 중...</div>;
+    if (error) return <div>오류 발생: {error.message}</div>;
+    if (!data || !data.restaurantCollection || !data.restaurantCollection.edges[0])
+        return <div>레스토랑 정보를 찾을 수 없습니다</div>;
+
+    const restaurant = data.restaurantCollection.edges[0].node;
 
     return (
         <Layout>
@@ -46,12 +55,12 @@ export function RestaurantDetailScreen() {
                     {/* 왼쪽 컬럼 - 기본 정보 */}
                     <div className="md:w-2/3">
                         <div className="flex justify-between items-start mb-4">
-                            <h1 className="text-3xl font-bold">{restaurantData.name}</h1>
+                            <h1 className="text-3xl font-bold">{restaurant.name}</h1>
                             <div className="flex items-center gap-2">
                                 <span className="bg-indigo-600 text-white px-2 py-1 rounded-md font-bold">
-                                    {restaurantData.rating}
+                                    {restaurant.rating}
                                 </span>
-                                <span className="text-gray-500">{restaurantData.priceRange}</span>
+                                <span className="text-gray-500">{restaurant.priceRange}</span>
                             </div>
                         </div>
 
@@ -64,12 +73,12 @@ export function RestaurantDetailScreen() {
 
                         <div className="flex flex-wrap gap-2 mb-4">
                             <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
-                                {restaurantData.cuisine}
+                                {restaurant.cuisine}
                             </span>
                         </div>
 
                         <div className="mb-6">
-                            <p className="text-gray-700 mb-4">{restaurantData.description}</p>
+                            <p className="text-gray-700 mb-4">{restaurant.description}</p>
                         </div>
 
                         {/* 인기 메뉴 */}
@@ -78,7 +87,7 @@ export function RestaurantDetailScreen() {
                                 인기 메뉴
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
-                                {restaurantData.popularDishes.map((dish, index) => (
+                                {(restaurant.popularDishes || []).map((dish, index) => (
                                     <div key={index} className="flex gap-3 items-center">
                                         {/* 메뉴 이미지 임시 처리 */}
                                         <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
@@ -133,17 +142,17 @@ export function RestaurantDetailScreen() {
                             <div className="space-y-3">
                                 <div className="flex items-start">
                                     <span className="w-24 text-gray-500">주소</span>
-                                    <span>{restaurantData.address}</span>
+                                    <span>{restaurant.address}</span>
                                 </div>
 
                                 <div className="flex items-start">
                                     <span className="w-24 text-gray-500">영업시간</span>
-                                    <span>{restaurantData.openingHours}</span>
+                                    <span>{restaurant.openingHours}</span>
                                 </div>
 
                                 <div className="flex items-start">
                                     <span className="w-24 text-gray-500">전화번호</span>
-                                    <span>{restaurantData.phone || '정보 없음'}</span>
+                                    <span>{restaurant.phone || '정보 없음'}</span>
                                 </div>
                             </div>
 
@@ -160,7 +169,7 @@ export function RestaurantDetailScreen() {
                                 편의 시설
                             </h2>
                             <div className="flex flex-wrap gap-2">
-                                {restaurantData.facilities.map((facility, index) => (
+                                {(restaurant.facilities || []).map((facility, index) => (
                                     <span
                                         key={index}
                                         className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
