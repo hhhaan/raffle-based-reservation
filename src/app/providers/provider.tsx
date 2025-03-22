@@ -1,7 +1,7 @@
 'use client';
 
 import { ApolloProvider } from '@apollo/client';
-import { apolloClient } from '@/src/shared/lib';
+import { apolloClient } from '@/src/shared/utils';
 import AuthProvider from './auth-provider';
 
 export default function Provider({ children }: { children: React.ReactNode }) {
