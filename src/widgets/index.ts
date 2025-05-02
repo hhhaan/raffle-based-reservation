@@ -1,3 +1,3 @@
 export { Layout } from './layout';
-export { Navigation } from './navigation';
+export { AuthLayout } from './auth-layout';
 export { RaffleCard } from './raffle-card';
