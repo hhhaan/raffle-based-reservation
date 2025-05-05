@@ -69,7 +69,7 @@ export const useUserStore = create<UserState>()(
                     const supabase = createClient(); // 함수 내부에서 초기화
                     await supabase.auth.signOut();
                     set({ user: null, userInfo: null, loading: false });
-                    window.location.href = '/login';
+                    window.location.href = '/';
                 } catch (error) {
                     console.error('로그아웃 오류:', error);
                     set({ error: error as Error, loading: false });

@@ -9,6 +9,7 @@ export const config = {
     matcher: [
         // 인증이 필요한 경로들
         '/profile',
+        '/profile/:path*',
         /*
          * Match all request paths except for the ones starting with:
          * - _next/static (static files)
