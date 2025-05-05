@@ -1,9 +1,4 @@
-import { Layout } from '@/src/widgets';
-
+import { FavoriteScreen } from '@/src/screens';
 export default function FavoritesPage() {
-    return (
-        <Layout>
-            <div>tlqk</div>
-        </Layout>
-    );
+    return <FavoriteScreen />;
 }

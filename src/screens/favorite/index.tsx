@@ -1,92 +1,84 @@
 'use client';
 
 import { Layout } from '@/src/widgets';
-import { useQuery } from '@apollo/client';
-import { useState } from 'react';
-import { GET_FAVORITES_WITH_DETAILS, FavoriteWithRestaurant } from '@/src/features/favorite/model';
+import { useUserStore } from '@/src/entities/user/model/store';
+import { useRouter } from 'next/navigation';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { useFavoriteToggle } from '@/src/features/favorite/hooks';
+import { useFavoriteRestaurants } from '@/src/features/favorite/hooks';
+import { useState, useEffect } from 'react';
+import { RestaurantCard } from '@/src/widgets/restaurant-card';
 
 export const FavoriteScreen = () => {
-    const { data, loading, error } = useQuery(GET_FAVORITES_WITH_DETAILS);
-    const [isImageError, setIsImageError] = useState<Record<string, boolean>>({});
+    const userId = useUserStore((state) => state.user?.id);
+    const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    // 에러 처리
-    if (error) {
+    // 기존 훅 사용
+    const { toggleFavorite, isProcessing, error, resetError } = useFavoriteToggle();
+    const { data: favoriteRestaurants, isLoading } = useFavoriteRestaurants(userId!);
+
+    // 에러 발생 시 처리
+    useEffect(() => {
+        if (error) {
+            setErrorMessage('즐겨찾기 작업 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            // 3초 후 에러 메시지 자동으로 숨기기
+            const timer = setTimeout(() => {
+                setErrorMessage(null);
+                resetError();
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [error, resetError]);
+
+    // 로딩 상태 처리
+    if (isLoading) {
         return (
             <Layout>
                 <div className="p-4">
                     <h1 className="text-xl font-bold mb-4">즐겨찾기한 레스토랑</h1>
-                    <div className="text-red-500">오류가 발생했습니다: {error.message}</div>
+                    <div className="flex items-center justify-center py-10">
+                        <Loader2 className="w-8 h-8 text-red-500 animate-spin mr-2" />
+                        <span>즐겨찾기 목록을 불러오는 중입니다...</span>
+                    </div>
                 </div>
             </Layout>
         );
     }
 
-    // 데이터 변환 및 필터링 (null이나 undefined 항목 제거)
-    const favorites =
-        data?.favoritesCollection?.edges
-            .filter(({ node }: { node: FavoriteWithRestaurant }) => node?.restaurant)
-            .map(({ node }: { node: FavoriteWithRestaurant }) => ({
-                id: node.id,
-                nodeId: node.nodeId,
-                restaurant: {
-                    id: node.restaurant.id,
-                    name: node.restaurant.name,
-                    imageUrl: node.restaurant.restaurant_imageCollection?.edges[0]?.node?.image_url || null,
-                },
-            })) || [];
-
-    const handleImageError = (id: string) => {
-        setIsImageError((prev) => ({ ...prev, [id]: true }));
-    };
+    if (favoriteRestaurants) {
+        console.log(favoriteRestaurants);
+    }
 
     return (
         <Layout>
             <div className="p-4">
                 <h1 className="text-xl font-bold mb-4">즐겨찾기한 레스토랑</h1>
 
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {/* 로딩 스켈레톤 UI */}
-                        {[1, 2, 3, 4, 5, 6].map((item) => (
-                            <div key={item} className="border rounded-lg overflow-hidden shadow-sm animate-pulse">
-                                <div className="w-full h-40 bg-gray-200"></div>
-                                <div className="p-4">
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                </div>
-                            </div>
-                        ))}
+                {/* 에러 메시지 표시 */}
+                {errorMessage && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
+                        <AlertTriangle className="w-5 h-5 mr-2" />
+                        {errorMessage}
                     </div>
-                ) : favorites.length === 0 ? (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500">즐겨찾기한 레스토랑이 없습니다.</p>
-                        <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors">
-                            레스토랑 둘러보기
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {favorites.map((favorite) => (
-                            <div
-                                key={favorite.id}
-                                className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                            >
-                                {favorite.restaurant.imageUrl && !isImageError[favorite.id] ? (
-                                    <img
-                                        src={favorite.restaurant.imageUrl}
-                                        alt={`${favorite.restaurant.name} 이미지`}
-                                        className="w-full h-40 object-cover"
-                                        onError={() => handleImageError(favorite.id)}
-                                    />
-                                ) : (
-                                    <div className="w-full h-40 bg-gray-200 flex items-center justify-center">
-                                        <span className="text-gray-400">이미지 없음</span>
-                                    </div>
-                                )}
+                )}
 
-                                <div className="p-4">
-                                    <h2 className="font-semibold text-lg">{favorite.restaurant.name}</h2>
-                                </div>
-                            </div>
+                {/* 즐겨찾기 목록 */}
+                {!favoriteRestaurants || favoriteRestaurants.length === 0 ? (
+                    <div className="text-center p-6 bg-gray-100 rounded-lg">즐겨찾기한 레스토랑이 없습니다.</div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {favoriteRestaurants.map((restaurant) => (
+                            <RestaurantCard
+                                key={restaurant.id}
+                                // 항상 즐겨찾기 상태로 표시
+                                restaurant={{ ...restaurant, isFavorite: true }}
+                                userId={userId!}
+                                onFavoriteToggle={toggleFavorite}
+                                isProcessing={isProcessing(restaurant.id)}
+                                onClick={() => router.push(`/restaurants/${restaurant.id}`)}
+                            />
                         ))}
                     </div>
                 )}
