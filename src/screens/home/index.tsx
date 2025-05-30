@@ -1,8 +1,9 @@
 'use client';
 
 import { Layout } from '@/src/widgets';
-import { Clock, Users, Sparkles } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { axiosClient } from '@/src/shared/utils';
 import { useEffect } from 'react';
 
 // 공통 카드 컴포넌트
@@ -53,10 +54,6 @@ const RaffleCard = ({
 };
 
 export function HomeScreen() {
-    useEffect(() => {
-        console.log(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`);
-    }, []);
-    // 래플 데이터
     const router = useRouter();
     const deadlineRaffles = [
         {
@@ -120,32 +117,18 @@ export function HomeScreen() {
         },
     ];
 
-    const newRaffles = [
-        {
-            name: '루지 아이스크림',
-            type: '디저트',
-            location: '가로수길',
-            time: '10분 전',
-            odds: '1:21',
-            price: '2,000원',
-        },
-        {
-            name: '서울포레스트',
-            type: '프랑스 요리',
-            location: '용산',
-            time: '1시간 전',
-            odds: '1:32',
-            price: '5,000원',
-        },
-        {
-            name: '아티스트리',
-            type: '전시회',
-            location: '북촌',
-            time: '3시간 전',
-            odds: '1:45',
-            price: '3,000원',
-        },
-    ];
+    const getRestaurants = async () => {
+        try {
+            const response = await axiosClient.get('/restaurant');
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        getRestaurants();
+    }, []);
 
     return (
         <Layout>
@@ -174,7 +157,6 @@ export function HomeScreen() {
                             </div>
                         </div>
                     </div>
-
                     {/* 핫 래플 - 마감임박 */}
                     <div className="mb-8">
                         <div className="flex items-center justify-between mb-4">
@@ -200,7 +182,6 @@ export function HomeScreen() {
                             ))}
                         </div>
                     </div>
-
                     {/* 인기 래플 */}
                     <div className="mb-8">
                         <div className="flex items-center justify-between mb-4">
@@ -222,32 +203,8 @@ export function HomeScreen() {
                             ))}
                         </div>
                     </div>
-
-                    {/* 신규 래플 */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 className="text-lg font-bold">✨ 새로 오픈한 래플</h2>
-                                <p className="text-sm text-gray-500">방금 시작된 따끈따끈한 래플</p>
-                            </div>
-                            <button className="text-sm text-indigo-600">더보기</button>
-                        </div>
-
-                        <div className="flex overflow-x-auto space-x-4 pb-4">
-                            {newRaffles.map((item, index) => (
-                                <RaffleCard
-                                    key={index}
-                                    item={item}
-                                    badgeText="NEW"
-                                    badgeColor="bg-blue-500"
-                                    iconElement={<Sparkles className="w-4 h-4 text-blue-500 mr-1" />}
-                                    statusText={`오픈: ${item.time}`}
-                                    statusColor="text-blue-500"
-                                    borderColor="border border-blue-100"
-                                />
-                            ))}
-                        </div>
-                    </div>
+                    {/* 레스토랑 목록 */}
+                    <div></div>
                 </div>
             </div>
         </Layout>

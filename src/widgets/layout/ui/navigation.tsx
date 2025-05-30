@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, Heart, Ticket, User } from 'lucide-react';
+import { Home, Bookmark, Ticket, User } from 'lucide-react';
 
 export const Navigation = () => {
     const router = useRouter();
@@ -54,7 +54,7 @@ export const Navigation = () => {
                             router.push('/profile/favorites');
                         }}
                     >
-                        <Heart size={20} />
+                        <Bookmark size={20} />
                         <span className="text-xs mt-1">즐겨찾기</span>
                     </button>
 
