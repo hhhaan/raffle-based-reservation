@@ -1,13 +1,14 @@
 'use client';
 
-import { ApolloProvider } from '@apollo/client';
-import { apolloClient } from '@/src/shared/utils';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './auth-provider';
+
+const queryClient = new QueryClient();
 
 export default function Provider({ children }: { children: React.ReactNode }) {
     return (
-        <ApolloProvider client={apolloClient}>
+        <QueryClientProvider client={queryClient}>
             <AuthProvider>{children}</AuthProvider>
-        </ApolloProvider>
+        </QueryClientProvider>
     );
 }
