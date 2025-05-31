@@ -68,7 +68,7 @@ export const FavoriteScreen = () => {
                 {!favoriteRestaurants || favoriteRestaurants.length === 0 ? (
                     <div className="text-center p-6 bg-gray-100 rounded-lg">즐겨찾기한 레스토랑이 없습니다.</div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1  gap-4">
                         {favoriteRestaurants.map((restaurant) => (
                             <RestaurantCard
                                 key={restaurant.id}
