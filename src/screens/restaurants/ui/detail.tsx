@@ -1,52 +1,53 @@
 'use client';
 
 import { Layout } from '@/src/widgets';
-import { useQuery, gql } from '@apollo/client';
-
-const GET_RESTAURANT = gql`
-    query GetRestaurant($id: Int!) {
-        restaurantCollection(filter: { id: { eq: $id } }) {
-            edges {
-                node {
-                    name
-                    description
-                }
-            }
-        }
-    }
-`;
+import { useQuery } from '@tanstack/react-query';
+import { GET_RESTAURANT_DETAIL } from '@/src/entities/restaurants/model/queries';
+import Image from 'next/image';
+import { fetchGraphQL } from '@/src/shared/api';
 
 export function RestaurantDetailScreen({ id }: { id: string }) {
-    const { data, loading, error } = useQuery(GET_RESTAURANT, {
-        variables: { id: parseInt(id) },
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['restaurantDetail', id],
+        queryFn: () => fetchGraphQL(GET_RESTAURANT_DETAIL, { id: parseInt(id) }),
     });
 
-    if (loading) return <div>로딩 중...</div>;
+    if (isLoading) return <div>로딩 중...</div>;
     if (error) return <div>오류 발생: {error.message}</div>;
     if (!data || !data.restaurantCollection || !data.restaurantCollection.edges[0])
         return <div>레스토랑 정보를 찾을 수 없습니다</div>;
 
     const restaurant = data.restaurantCollection.edges[0].node;
 
+    if (data) {
+        console.log(data);
+    }
+
     return (
         <Layout>
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="mb-8">
                     {/* 이미지 헤더 */}
-                    <div className="w-full h-80 bg-gray-200 rounded-lg mb-4 flex items-center justify-center shadow-md">
-                        <span className="text-gray-600 text-xl">레스토랑 메인 이미지</span>
-                    </div>
-
-                    {/* 작은 이미지 갤러리 */}
-                    <div className="grid grid-cols-4 gap-2 h-24">
-                        {[1, 2, 3, 4].map((item) => (
-                            <div
-                                key={item}
-                                className="bg-gray-100 rounded flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
-                            >
-                                <span className="text-gray-500 text-sm">이미지 {item}</span>
+                    <div className="w-full h-80 rounded-lg mb-4 shadow-md overflow-hidden">
+                        {restaurant.restaurant_imageCollection.edges.filter(
+                            (edge: { node: { is_primary: boolean } }) => edge.node.is_primary
+                        ).length > 0 ? (
+                            <Image
+                                src={
+                                    restaurant.restaurant_imageCollection.edges.find(
+                                        (edge: { node: { is_primary: boolean } }) => edge.node.is_primary
+                                    )?.node.image_url
+                                }
+                                alt={`${restaurant.name} 메인 이미지`}
+                                className="w-full h-full object-cover"
+                                width={100}
+                                height={100}
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                <div className="text-gray-600 text-xl">이미지 없음</div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
@@ -87,7 +88,7 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                                 인기 메뉴
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
-                                {(restaurant.popularDishes || []).map((dish, index) => (
+                                {(restaurant.popularDishes || []).map((dish: string, index: number) => (
                                     <div key={index} className="flex gap-3 items-center">
                                         {/* 메뉴 이미지 임시 처리 */}
                                         <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
@@ -169,7 +170,7 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                                 편의 시설
                             </h2>
                             <div className="flex flex-wrap gap-2">
-                                {(restaurant.facilities || []).map((facility, index) => (
+                                {(restaurant.facilities || []).map((facility: string, index: number) => (
                                     <span
                                         key={index}
                                         className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
