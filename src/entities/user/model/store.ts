@@ -18,6 +18,8 @@ interface UserState {
     userInfo: UserInfo | null;
     error: Error | null;
     loading: boolean;
+    isLoggedIn: () => Promise<boolean>;
+    redirectToLogin: () => void;
     signInWithKakao: (redirectUrl: string) => Promise<string | null>;
     setUser: (user: User | null) => void;
     signOut: () => Promise<void>;
@@ -42,10 +44,25 @@ export const useUserStore = create<UserState>()(
             userInfo: null,
             error: null,
             loading: false,
+            isLoggedIn: async () => {
+                const supabase = createClient();
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+                return session !== null;
+            },
+            redirectToLogin: () => {
+                // 현재 URL을 저장하여 로그인 후 돌아올 수 있게 함
+                const currentUrl = window.location.pathname + window.location.search;
+                // URL을 인코딩하여 쿼리 파라미터에 추가
+                const redirectUrl = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+                window.location.href = redirectUrl;
+            },
+
             signInWithKakao: async (redirectUrl: string) => {
                 set({ loading: true });
                 try {
-                    const supabase = createClient(); // 함수 내부에서 초기화
+                    const supabase = createClient();
                     const { data, error } = await supabase.auth.signInWithOAuth({
                         provider: 'kakao',
                         options: {
@@ -66,7 +83,7 @@ export const useUserStore = create<UserState>()(
             signOut: async () => {
                 try {
                     set({ loading: true, error: null });
-                    const supabase = createClient(); // 함수 내부에서 초기화
+                    const supabase = createClient();
                     await supabase.auth.signOut();
                     set({ user: null, userInfo: null, loading: false });
                     window.location.href = '/';
@@ -79,7 +96,7 @@ export const useUserStore = create<UserState>()(
             getUser: async () => {
                 try {
                     set({ loading: true });
-                    const supabase = createClient(); // 함수 내부에서 초기화
+                    const supabase = createClient();
                     const { data, error } = await supabase.auth.getUser();
 
                     if (error) throw error;
