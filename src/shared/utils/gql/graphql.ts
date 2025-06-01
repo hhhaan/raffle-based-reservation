@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -204,6 +203,7 @@ export type Mutation = {
   deleteFromreviewsCollection: ReviewsDeleteResponse;
   /** Deletes zero or more records from the `reviews_image` collection */
   deleteFromreviews_imageCollection: Reviews_ImageDeleteResponse;
+  enter_raffle?: Maybe<Scalars['Boolean']['output']>;
   /** Adds one or more `favorites` records to the collection */
   insertIntofavoritesCollection?: Maybe<FavoritesInsertResponse>;
   /** Adds one or more `profile` records to the collection */
@@ -292,6 +292,13 @@ export type MutationDeleteFromreviewsCollectionArgs = {
 export type MutationDeleteFromreviews_ImageCollectionArgs = {
   atMost?: Scalars['Int']['input'];
   filter?: InputMaybe<Reviews_ImageFilter>;
+};
+
+
+/** The root type for creating and mutating data */
+export type MutationEnter_RaffleArgs = {
+  p_raffle_id: Scalars['UUID']['input'];
+  p_user_id: Scalars['UUID']['input'];
 };
 
 
@@ -1124,7 +1131,6 @@ export type RestaurantUpdateResponse = {
 export type Restaurant_Image = Node & {
   __typename?: 'restaurant_image';
   id: Scalars['Int']['output'];
-  id2?: Maybe<Scalars['Int']['output']>;
   image_description?: Maybe<Scalars['String']['output']>;
   image_url?: Maybe<Scalars['String']['output']>;
   is_primary?: Maybe<Scalars['Boolean']['output']>;
@@ -1158,7 +1164,6 @@ export type Restaurant_ImageFilter = {
   /** Returns true only if all its inner filters are true, otherwise returns false */
   and?: InputMaybe<Array<Restaurant_ImageFilter>>;
   id?: InputMaybe<IntFilter>;
-  id2?: InputMaybe<IntFilter>;
   image_description?: InputMaybe<StringFilter>;
   image_url?: InputMaybe<StringFilter>;
   is_primary?: InputMaybe<BooleanFilter>;
@@ -1171,7 +1176,6 @@ export type Restaurant_ImageFilter = {
 };
 
 export type Restaurant_ImageInsertInput = {
-  id2?: InputMaybe<Scalars['Int']['input']>;
   image_description?: InputMaybe<Scalars['String']['input']>;
   image_url?: InputMaybe<Scalars['String']['input']>;
   is_primary?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1188,7 +1192,6 @@ export type Restaurant_ImageInsertResponse = {
 
 export type Restaurant_ImageOrderBy = {
   id?: InputMaybe<OrderByDirection>;
-  id2?: InputMaybe<OrderByDirection>;
   image_description?: InputMaybe<OrderByDirection>;
   image_url?: InputMaybe<OrderByDirection>;
   is_primary?: InputMaybe<OrderByDirection>;
@@ -1196,7 +1199,6 @@ export type Restaurant_ImageOrderBy = {
 };
 
 export type Restaurant_ImageUpdateInput = {
-  id2?: InputMaybe<Scalars['Int']['input']>;
   image_description?: InputMaybe<Scalars['String']['input']>;
   image_url?: InputMaybe<Scalars['String']['input']>;
   is_primary?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1392,11 +1394,3 @@ export type Reviews_ImageUpdateResponse = {
   /** Array of records impacted by the mutation */
   records: Array<Reviews_Image>;
 };
-
-export type GetRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetRestaurantsQuery = { __typename: 'Query', restaurantCollection?: { __typename: 'restaurantConnection', edges: Array<{ __typename: 'restaurantEdge', node: { __typename: 'restaurant', id: number, name?: string | null, description?: string | null, cuisine_type?: string | null } }> } | null };
-
-
-export const GetRestaurantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRestaurants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"restaurantCollection"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"cuisine_type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRestaurantsQuery, GetRestaurantsQueryVariables>;
