@@ -1,38 +1,20 @@
 'use client';
 
-import { Layout } from '@/src/widgets';
-import { useUserStore } from '@/src/entities/user/model/store';
+import { Layout } from '@/src/widgets/layout';
 import { useRouter } from 'next/navigation';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { useFavoriteToggle } from '@/src/features/favorite/hooks';
 import { useFavoriteRestaurants } from '@/src/features/favorite/hooks';
-import { useState, useEffect } from 'react';
-import { RestaurantCard } from '@/src/widgets/restaurant-card';
+import { RestaurantCard } from '@/src/entities/restaurant/ui/restaurant-card';
+import { useUserStore } from '@/src/entities/user/model/store';
 
 export const FavoriteScreen = () => {
     const userId = useUserStore((state) => state.user?.id);
     const router = useRouter();
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    // 기존 훅 사용
-    const { toggleFavorite, isProcessing, error, resetError } = useFavoriteToggle();
-    const { data: favoriteRestaurants, isLoading } = useFavoriteRestaurants(userId!);
+    const { toggleFavorite, isProcessing, error } = useFavoriteToggle();
+    const { data: restaurants, isLoading } = useFavoriteRestaurants();
 
-    // 에러 발생 시 처리
-    useEffect(() => {
-        if (error) {
-            setErrorMessage('즐겨찾기 작업 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            // 3초 후 에러 메시지 자동으로 숨기기
-            const timer = setTimeout(() => {
-                setErrorMessage(null);
-                resetError();
-            }, 3000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [error, resetError]);
-
-    // 로딩 상태 처리
     if (isLoading) {
         return (
             <Layout>
@@ -47,36 +29,32 @@ export const FavoriteScreen = () => {
         );
     }
 
-    if (favoriteRestaurants) {
-        console.log(favoriteRestaurants);
-    }
-
     return (
         <Layout>
             <div className="p-4">
                 <h1 className="text-xl font-bold mb-4">즐겨찾기한 레스토랑</h1>
 
-                {/* 에러 메시지 표시 */}
-                {errorMessage && (
+                {error && (
                     <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md flex items-center">
                         <AlertTriangle className="w-5 h-5 mr-2" />
-                        {errorMessage}
+                        즐겨찾기 작업 중 오류가 발생했습니다.
                     </div>
                 )}
 
-                {/* 즐겨찾기 목록 */}
-                {!favoriteRestaurants || favoriteRestaurants.length === 0 ? (
+                {!restaurants?.length ? (
                     <div className="text-center p-6 bg-gray-100 rounded-lg">즐겨찾기한 레스토랑이 없습니다.</div>
                 ) : (
-                    <div className="grid grid-cols-1  gap-4">
-                        {favoriteRestaurants.map((restaurant) => (
+                    <div className="grid grid-cols-1 gap-4">
+                        {restaurants.map((restaurant) => (
                             <RestaurantCard
                                 key={restaurant.id}
-                                // 항상 즐겨찾기 상태로 표시
-                                restaurant={{ ...restaurant, isFavorite: true }}
+                                restaurant={{
+                                    ...restaurant,
+                                    imageUrl: restaurant.restaurant_image?.[0]?.image_url || '/default-restaurant.jpg',
+                                }}
                                 userId={userId!}
                                 onFavoriteToggle={toggleFavorite}
-                                isProcessing={isProcessing(restaurant.id)}
+                                isProcessing={isProcessing(restaurant.id!)}
                                 onClick={() => router.push(`/restaurants/${restaurant.id}`)}
                             />
                         ))}
