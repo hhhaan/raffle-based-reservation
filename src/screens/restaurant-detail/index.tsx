@@ -1,27 +1,18 @@
 'use client';
 
-import { Layout } from '@/src/widgets';
-import { useQuery } from '@tanstack/react-query';
-import { GET_RESTAURANT_DETAIL } from '@/src/entities/restaurants/model/queries';
+import { Layout } from '@/src/widgets/layout';
 import Image from 'next/image';
-import { fetchGraphQL } from '@/src/shared/api';
+import { useRestaurantDetail } from '@/src/entities/restaurant/hooks';
 
-export function RestaurantDetailScreen({ id }: { id: string }) {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['restaurantDetail', id],
-        queryFn: () => fetchGraphQL(GET_RESTAURANT_DETAIL, { id: parseInt(id) }),
-    });
+export const RestaurantDetailScreen = ({ id }: { id: string }) => {
+    const { data: restaurant, isLoading, error } = useRestaurantDetail(parseInt(id));
 
     if (isLoading) return <div>로딩 중...</div>;
     if (error) return <div>오류 발생: {error.message}</div>;
-    if (!data || !data.restaurantCollection || !data.restaurantCollection.edges[0])
-        return <div>레스토랑 정보를 찾을 수 없습니다</div>;
+    if (!restaurant) return <div>레스토랑 정보를 찾을 수 없습니다</div>;
 
-    const restaurant = data.restaurantCollection.edges[0].node;
-
-    if (data) {
-        console.log(data);
-    }
+    // 메인 이미지 찾기
+    const primaryImage = restaurant.restaurant_image?.find((img) => img.is_primary)?.image_url;
 
     return (
         <Layout>
@@ -29,19 +20,13 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                 <div className="mb-8">
                     {/* 이미지 헤더 */}
                     <div className="w-full h-80 rounded-lg mb-4 shadow-md overflow-hidden">
-                        {restaurant.restaurant_imageCollection.edges.filter(
-                            (edge: { node: { is_primary: boolean } }) => edge.node.is_primary
-                        ).length > 0 ? (
+                        {primaryImage ? (
                             <Image
-                                src={
-                                    restaurant.restaurant_imageCollection.edges.find(
-                                        (edge: { node: { is_primary: boolean } }) => edge.node.is_primary
-                                    )?.node.image_url
-                                }
+                                src={primaryImage}
                                 alt={`${restaurant.name} 메인 이미지`}
                                 className="w-full h-full object-cover"
-                                width={100}
-                                height={100}
+                                width={800}
+                                height={320}
                             />
                         ) : (
                             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -58,10 +43,8 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                         <div className="flex justify-between items-start mb-4">
                             <h1 className="text-3xl font-bold">{restaurant.name}</h1>
                             <div className="flex items-center gap-2">
-                                <span className="bg-indigo-600 text-white px-2 py-1 rounded-md font-bold">
-                                    {restaurant.rating}
-                                </span>
-                                <span className="text-gray-500">{restaurant.priceRange}</span>
+                                <span className="bg-indigo-600 text-white px-2 py-1 rounded-md font-bold">4.5</span>
+                                <span className="text-gray-500">₩₩₩</span>
                             </div>
                         </div>
 
@@ -74,7 +57,7 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
 
                         <div className="flex flex-wrap gap-2 mb-4">
                             <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
-                                {restaurant.cuisine}
+                                {restaurant.cuisine_type}
                             </span>
                         </div>
 
@@ -88,9 +71,8 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                                 인기 메뉴
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
-                                {(restaurant.popularDishes || []).map((dish: string, index: number) => (
+                                {['시그니처 스테이크', '해산물 파스타', '트러플 리조또'].map((dish, index) => (
                                     <div key={index} className="flex gap-3 items-center">
-                                        {/* 메뉴 이미지 임시 처리 */}
                                         <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
                                             <span className="text-xs text-gray-500">사진</span>
                                         </div>
@@ -148,17 +130,23 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
 
                                 <div className="flex items-start">
                                     <span className="w-24 text-gray-500">영업시간</span>
-                                    <span>{restaurant.openingHours}</span>
+                                    <span>
+                                        {restaurant.opening_hours} - {restaurant.closing_hours}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-start">
                                     <span className="w-24 text-gray-500">전화번호</span>
-                                    <span>{restaurant.phone || '정보 없음'}</span>
+                                    <span>02-1234-5678</span>
+                                </div>
+
+                                <div className="flex items-start">
+                                    <span className="w-24 text-gray-500">수용인원</span>
+                                    <span>최대 {restaurant.max_capacity}명</span>
                                 </div>
                             </div>
 
                             <div className="mt-4">
-                                {/* 지도 자리 (임시 div로 처리) */}
                                 <div className="w-full h-40 bg-gray-100 rounded-md flex items-center justify-center">
                                     <span className="text-gray-500">지도</span>
                                 </div>
@@ -170,7 +158,7 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
                                 편의 시설
                             </h2>
                             <div className="flex flex-wrap gap-2">
-                                {(restaurant.facilities || []).map((facility: string, index: number) => (
+                                {['주차 가능', '무료 WiFi', '카드 결제', '예약 필수'].map((facility, index) => (
                                     <span
                                         key={index}
                                         className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
@@ -185,4 +173,4 @@ export function RestaurantDetailScreen({ id }: { id: string }) {
             </div>
         </Layout>
     );
-}
+};

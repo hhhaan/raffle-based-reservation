@@ -1,6 +1,6 @@
 'use client';
 
-import { Layout } from '@/src/widgets';
+import { Layout } from '@/src/widgets/layout';
 import { useUserStore } from '@/src/entities/user/model/store';
 import Image from 'next/image';
 

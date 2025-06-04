@@ -1,6 +1,6 @@
 'use client';
 
-import { Layout } from '@/src/widgets';
+import { Layout } from '@/src/widgets/layout';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback } from 'react';
 import Image from 'next/image';
@@ -106,7 +106,9 @@ RestaurantList.displayName = 'RestaurantList';
 export const RestaurantsScreen = () => {
     const { toggleFavorite, isProcessing } = useFavoriteToggle();
     const userId = useUserStore((state) => state.user?.id);
-    const restaurants = useRestaurantsWithFavorites(userId!);
+    const { data: restaurants, isLoading } = useRestaurantsWithFavorites();
+
+    console.log(restaurants);
 
     // 즐겨찾기 토글 핸들러
     const handleFavoriteToggle = useCallback(
@@ -121,6 +123,19 @@ export const RestaurantsScreen = () => {
         },
         [userId, toggleFavorite]
     );
+
+    if (isLoading) {
+        return (
+            <Layout>
+                <div className="container mx-auto px-4 py-8">
+                    <div className="flex items-center justify-center py-10">
+                        <Loader2 className="w-8 h-8 text-red-500 animate-spin mr-2" />
+                        레스토랑 목록을 불러오는 중입니다...
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     // 메인 UI
     return (

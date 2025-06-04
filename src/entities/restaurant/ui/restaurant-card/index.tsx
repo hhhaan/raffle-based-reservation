@@ -11,7 +11,7 @@ export interface ToggleFavoriteParams {
     isFavorite: boolean;
 }
 export interface Restaurant {
-    id: string;
+    id: number;
     name: string;
     description: string;
     // cuisine_type: string;

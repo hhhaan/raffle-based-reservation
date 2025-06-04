@@ -1,6 +1,6 @@
 'use client';
 
-import { Layout } from '@/src/widgets';
+import { Layout } from '@/src/widgets/layout';
 import { Clock, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { axiosClient } from '@/src/shared/utils';

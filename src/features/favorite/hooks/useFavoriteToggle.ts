@@ -9,7 +9,7 @@ interface ToggleFavoriteParams {
     restaurantId: number;
     isFavorite: boolean;
 }
-
+// toggle favorite는 원칙적으로는 /api 소속이지만, 해당 훅에서만 사용될 가능성이 높기 때문에 일단 여기 두겠음
 const toggleFavorite = async ({ userId, restaurantId, isFavorite }: ToggleFavoriteParams) => {
     const supabase = createClient();
     if (isFavorite) {
