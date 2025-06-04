@@ -1,35 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Layout, RaffleCard } from '@/src/widgets';
+import { Layout } from '@/src/widgets/layout';
+import { RaffleCard } from '@/src/entities/raffle/ui/raffle-card';
 import { ArrowLeft, Heart, Search, Filter } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchGraphQL } from '@/src/shared/api/graphql';
-import { GET_RAFFLES } from '@/src/entities/raffle/model/queries';
+import { useRaffles } from '@/src/entities/raffle/hooks';
 
 export const RaffleScreen = () => {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['raffles'],
-        queryFn: () => fetchGraphQL(GET_RAFFLES),
-    });
+    const { data, isLoading, error } = useRaffles();
     const [activeCategory, setActiveCategory] = useState('전체');
     const categories = ['전체', '진행중', '오픈 예정', '종료'];
-
-    const raffles = data?.raffleCollection?.edges?.map((edge: any) => edge.node) || [];
-    const raffleWithRestaurants = raffles.map((raffle: any) => ({
-        id: raffle.id,
-        status: raffle.status,
-        restaurantName: raffle.restaurant?.name,
-        restaurantImage: raffle.restaurant?.restaurant_imageCollection?.edges?.[0]?.node?.image_url || '',
-    }));
-
-    console.log(raffleWithRestaurants);
 
     // 카테고리에 따른 필터링 로직 추가
     const filteredRaffles =
         activeCategory === '전체'
-            ? raffleWithRestaurants
-            : raffleWithRestaurants.filter((raffle: any) => {
+            ? data
+            : data?.filter((raffle: any) => {
                   if (activeCategory === '진행중') return raffle.status === 'ONGOING';
                   if (activeCategory === '오픈 예정') return raffle.status === 'UPCOMING';
                   if (activeCategory === '종료') return raffle.status === 'ENDED';
@@ -57,7 +43,7 @@ export const RaffleScreen = () => {
                 {/* 래플 통계 정보 */}
                 <div className="px-4 pt-4 pb-2">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-lg font-bold">래플 {filteredRaffles.length}개</h2>
+                        <h2 className="text-lg font-bold">래플 {filteredRaffles?.length}개</h2>
                         <button className="flex items-center text-xs px-2 py-1 border border-gray-300 rounded-full">
                             <Filter className="w-3 h-3 mr-1" />
                             <span>정렬 필터</span>
@@ -89,9 +75,7 @@ export const RaffleScreen = () => {
                 {/* 래플 목록 */}
                 <div className="px-4">
                     <div className="space-y-4">
-                        {filteredRaffles.map((raffle: any) => (
-                            <RaffleCard key={raffle.id} {...raffle} />
-                        ))}
+                        {filteredRaffles?.map((raffle: any) => <RaffleCard key={raffle.id} {...raffle} />)}
                     </div>
                 </div>
 

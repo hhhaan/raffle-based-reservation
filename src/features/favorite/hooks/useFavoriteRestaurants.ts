@@ -1,24 +1,62 @@
-import { useFavoriteIds } from './useFavoriteIds';
-import { useRestaurantsByIds } from './useRestaurantsByIds';
+'use client';
 
-export const useFavoriteRestaurants = (userId: string) => {
-    // 1. 즐겨찾기 ID 목록 가져오기
-    const { data: favoriteIds, isLoading: isLoadingIds, error: idsError } = useFavoriteIds(userId);
+import { useUserStore } from '@/src/entities/user/model/store';
+import { createClient } from '@/src/shared/utils/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { useFavorites } from '@/src/features/favorite/api';
 
-    // 2. ID 목록으로 레스토랑 정보 가져오기
-    const {
-        data: restaurants,
-        isLoading: isLoadingRestaurants,
-        error: restaurantsError,
-    } = useRestaurantsByIds(favoriteIds!);
+interface FavoriteRestaurantResponse {
+    id: number;
+    name: string;
+    address: string;
+    description: string;
+    cuisine_type: string;
+    max_capacity: number;
+    closing_hours: string;
+    opening_hours: string;
+    restaurant_image: Array<{
+        image_url: string;
+    }>;
+}
 
-    // 3. 로딩 및 에러 상태 통합
-    const isLoading = isLoadingIds || isLoadingRestaurants;
-    const error = idsError || restaurantsError;
+const getFavoriteRestaurants = async (userId: string) => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+        .from('favorites')
+        .select(
+            `
+           restaurant (
+               *,
+               restaurant_image(image_url)
+           )
+       `
+        )
+        .eq('user_id', userId)
+        .order('restaurant(name)');
+
+    if (error) throw error;
+
+    return (
+        data?.map(({ restaurant }) => ({
+            ...(restaurant as FavoriteRestaurantResponse),
+            isFavorite: true,
+        })) || []
+    );
+};
+
+export const useFavoriteRestaurants = () => {
+    const userId = useUserStore((state) => state.user?.id);
+    const { data: favorites } = useFavorites();
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['favorites', 'restaurants', userId],
+        queryFn: () => getFavoriteRestaurants(userId!),
+        enabled: !!userId && favorites?.length > 0,
+    });
 
     return {
-        data: restaurants,
+        data: data || [],
         isLoading,
-        error,
     };
 };
