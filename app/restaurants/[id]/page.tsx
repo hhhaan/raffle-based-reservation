@@ -1,6 +1,6 @@
 // app/restaurants/[id]/page.tsx
-import { RestaurantScreen } from '@/src/screens';
+import { RestaurantDetailScreen } from '@/src/screens';
 
-export default function RestaurantPage() {
-    return <RestaurantScreen />;
+export default function RestaurantPage({ params }: { params: { id: string } }) {
+    return <RestaurantDetailScreen id={params.id} />;
 }

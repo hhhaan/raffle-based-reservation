@@ -1,4 +1,7 @@
-export { HomeScreen } from './home/ui';
+export { HomeScreen } from './home';
 export { ProfileScreen } from './profile';
-export { RestaurantScreen } from './restaurants';
-export { RaffleScreen } from './raffle/ui/raffle';
+export { RaffleScreen } from './raffle';
+export { FavoriteScreen } from './favorite';
+export { LoginScreen } from './login';
+export { RestaurantsScreen } from './restaurant';
+export { RestaurantDetailScreen } from './restaurant-detail';

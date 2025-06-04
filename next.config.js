@@ -4,5 +4,4 @@ const nextConfig = {
         domains: ['k.kakaocdn.net'],
     },
 };
-
 module.exports = nextConfig;

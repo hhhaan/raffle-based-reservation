@@ -1,3 +1,9 @@
-import RootLayout from '@/src/app/layout';
+import App from '@/src/app/App';
 
-export default RootLayout;
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return <App>{children}</App>;
+}
