@@ -1,10 +1,10 @@
 'use client';
 import { createClient } from '@/src/shared/utils/supabase/client';
 
-export const getRaffles = async () => {
+export const getRaffles = async (offset = 0) => {
     const supabase = createClient();
 
-    const { data, error } = await supabase
+    const { data: raffle, error } = await supabase
         .from('raffle')
         .select(
             `
@@ -23,22 +23,8 @@ export const getRaffles = async () => {
             )
         `
         )
-        .order('start_datetime', { ascending: false });
+        .range(offset, offset + 9); // 10개씩 가져오기 (0-9, 10-19, ...)
 
-    if (error) {
-        console.error('Raffles 조회 오류:', error);
-        throw error;
-    }
-
-    return (
-        data?.map((raffle) => ({
-            ...raffle,
-            start_datetime: raffle.start_datetime ? new Date(raffle.start_datetime) : null,
-            end_datetime: raffle.end_datetime ? new Date(raffle.end_datetime) : null,
-            restaurant: {
-                ...raffle.restaurant,
-                primary_image: raffle.restaurant?.restaurant_image?.find((img) => img.is_primary)?.image_url || null,
-            },
-        })) || []
-    );
+    if (error) throw error;
+    return raffle;
 };
