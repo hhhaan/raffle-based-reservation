@@ -88,7 +88,6 @@ export type Database = {
           id: number
           restaurant_id: number | null
           start_datetime: string | null
-          status: string | null
         }
         Insert: {
           available_seats?: number | null
@@ -96,7 +95,6 @@ export type Database = {
           id?: number
           restaurant_id?: number | null
           start_datetime?: string | null
-          status?: string | null
         }
         Update: {
           available_seats?: number | null
@@ -104,7 +102,6 @@ export type Database = {
           id?: number
           restaurant_id?: number | null
           start_datetime?: string | null
-          status?: string | null
         }
         Relationships: [
           {
@@ -286,8 +283,8 @@ export type Database = {
     }
     Functions: {
       enter_raffle: {
-        Args: { p_user_id: string; p_raffle_id: string }
-        Returns: boolean
+        Args: { p_user_id: string; p_raffle_id: number }
+        Returns: Json
       }
     }
     Enums: {

@@ -9,7 +9,6 @@ export const getRaffles = async (offset = 0) => {
         .select(
             `
             id,
-            status,
             restaurant_id,
             start_datetime,
             end_datetime,
