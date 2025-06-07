@@ -1,29 +1,38 @@
 'use client';
 import { createClient } from '@/src/shared/utils/supabase/client';
+import { RAFFLE_STATUS, RaffleStatusType } from '../constants';
 
-export const getRaffles = async (offset = 0) => {
+export const getRaffles = async (offset = 0, status: RaffleStatusType) => {
     const supabase = createClient();
 
-    const { data: raffle, error } = await supabase
-        .from('raffle')
-        .select(
-            `
-            id,
-            restaurant_id,
-            start_datetime,
-            end_datetime,
-            available_seats,
-            restaurant (
-                name,
-                restaurant_image!restaurant_image_restaurant_id_fkey (
-                    image_url,
-                    is_primary
-                )
+    let query = supabase.from('raffle').select(
+        `id,
+        restaurant_id,
+        start_datetime,
+        end_datetime,
+        available_seats,
+        restaurant (
+            name,
+            restaurant_image (
+                image_url,
+                is_primary
             )
-        `
         )
-        .range(offset, offset + 9); // 10개씩 가져오기 (0-9, 10-19, ...)
+    `
+    );
+
+    const now = new Date().toISOString();
+
+    if (status === RAFFLE_STATUS.ONGOING) {
+        query = query.lte('start_datetime', now).gte('end_datetime', now);
+    } else if (status === RAFFLE_STATUS.UPCOMING) {
+        query = query.gt('start_datetime', now);
+    } else if (status === RAFFLE_STATUS.ENDED) {
+        query = query.lt('end_datetime', now);
+    }
+
+    const { data, error } = await query.range(offset, offset + 9);
 
     if (error) throw error;
-    return raffle;
+    return data;
 };
