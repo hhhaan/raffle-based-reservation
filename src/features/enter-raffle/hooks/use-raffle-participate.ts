@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { createClient } from '@/src/shared/utils/supabase/client';
 import { debounce } from 'lodash';
 
@@ -48,14 +48,14 @@ export const useRaffleParticipate = ({
     onSuccess?: (raffleId: number) => void;
     onError?: (error: { message: string; code?: RaffleErrorCode; raffleId: number }) => void;
 } = {}) => {
-    const isSubmittingRef = useRef(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleParticipate = useCallback(
         async (raffleId: number, userId: string) => {
-            if (isSubmittingRef.current) return;
+            if (isSubmitting) return;
 
-            isSubmittingRef.current = true;
+            setIsSubmitting(true);
             setError(null);
 
             try {
@@ -76,10 +76,10 @@ export const useRaffleParticipate = ({
                 setError(errorMessage);
                 onError?.({ message: errorMessage, raffleId });
             } finally {
-                isSubmittingRef.current = false;
+                setIsSubmitting(false);
             }
         },
-        [onSuccess, onError]
+        [onSuccess, isSubmitting, onError]
     );
 
     const debouncedParticipate = useMemo(
@@ -100,7 +100,7 @@ export const useRaffleParticipate = ({
 
     return {
         participate: debouncedParticipate,
-        isSubmitting: isSubmittingRef.current,
+        isSubmitting,
         error,
         clearError,
     };
