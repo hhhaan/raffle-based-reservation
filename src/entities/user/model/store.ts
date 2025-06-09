@@ -55,18 +55,22 @@ export const useUserStore = create<UserState>()(
                 // 현재 URL을 저장하여 로그인 후 돌아올 수 있게 함
                 const currentUrl = window.location.pathname + window.location.search;
                 // URL을 인코딩하여 쿼리 파라미터에 추가
-                const redirectUrl = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+                // const redirectUrl = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+                const redirectUrl = `/login?next=${encodeURIComponent(currentUrl)}`;
                 window.location.href = redirectUrl;
             },
-
             signInWithKakao: async (redirectUrl: string) => {
                 set({ loading: true });
                 try {
                     const supabase = createClient();
+                    // redirectUrl에 next 파라미터 추가
+                    const currentUrl = window.location.pathname + window.location.search;
+                    const callbackUrl = `${redirectUrl}?next=${encodeURIComponent(currentUrl)}`;
+
                     const { data, error } = await supabase.auth.signInWithOAuth({
                         provider: 'kakao',
                         options: {
-                            redirectTo: redirectUrl,
+                            redirectTo: callbackUrl,
                         },
                     });
                     if (error) throw error;
