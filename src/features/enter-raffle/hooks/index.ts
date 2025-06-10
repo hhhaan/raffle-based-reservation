@@ -1,1 +1,1 @@
-export * from './use-raffle-participate';
+export * from './use-enter-raffle';

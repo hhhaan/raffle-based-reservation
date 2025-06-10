@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { Layout } from '@/src/widgets/layout';
 import { RaffleCard } from '@/src/entities/raffle/ui/raffle-card';
 import { ArrowLeft, Heart, Search, Filter } from 'lucide-react';
-import { useRaffles } from '@/src/entities/raffle/hooks';
-import { useRaffleParticipate } from '@/src/features/enter-raffle/hooks';
-import { getStatus } from '@/src/entities/raffle/lib';
+import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
 import { RAFFLE_STATUS, RaffleStatusType } from '@/src/entities/raffle/constants';
+import { useRafflesWithParticipation } from '@/src/entities/raffle/hooks';
+import { useUserStore } from '@/src/entities/user/model/store';
 
 export const RaffleScreen = () => {
     const [activeCategory, setActiveCategory] = useState<RaffleStatusType>(RAFFLE_STATUS.ALL);
+    const userId = useUserStore((state) => state.user?.id);
 
     const {
         data: raffles,
@@ -19,21 +20,9 @@ export const RaffleScreen = () => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = useRaffles(activeCategory);
+    } = useRafflesWithParticipation(activeCategory, userId);
 
-    const {
-        participate,
-        isSubmitting,
-        error: participateError,
-        clearError,
-    } = useRaffleParticipate({
-        onSuccess: (raffleId) => {
-            console.log(`래플 ${raffleId} 응모 성공!`);
-        },
-        onError: ({ message, raffleId }) => {
-            console.error(`래플 ${raffleId} 응모 실패:`, message);
-        },
-    });
+    const { participate, isLoading: isSubmitting, error: participateError, reset: clearError } = useEnterRaffle();
 
     const categoryMap = {
         [RAFFLE_STATUS.ALL]: '전체',
@@ -44,9 +33,9 @@ export const RaffleScreen = () => {
 
     const categories = Object.entries(categoryMap);
 
-    const handleRaffleParticipate = (raffleId: number, userId: string) => {
-        participate(raffleId, userId);
-    };
+    if (raffles) {
+        console.log(raffles);
+    }
 
     if (isLoading) {
         return (
@@ -115,7 +104,7 @@ export const RaffleScreen = () => {
                 {participateError && (
                     <div className="px-4 mb-4">
                         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
-                            {participateError}
+                            {participateError.message}
                             <button onClick={clearError} className="ml-2 text-red-800 underline">
                                 닫기
                             </button>
@@ -129,7 +118,6 @@ export const RaffleScreen = () => {
                         {raffles?.map((raffle: any) => {
                             const raffleCardProps = {
                                 ...raffle,
-                                status: getStatus(raffle.start_datetime, raffle.end_datetime),
                                 restaurant_name: raffle.restaurant?.name,
                                 restaurant_image: raffle.restaurant?.restaurant_image?.[0]?.image_url,
                             };
@@ -138,7 +126,8 @@ export const RaffleScreen = () => {
                                 <RaffleCard
                                     key={raffle.id}
                                     {...raffleCardProps}
-                                    onParticipate={handleRaffleParticipate}
+                                    onParticipate={participate}
+                                    isParticipated={raffle.isParticipated}
                                     isSubmitting={isSubmitting}
                                     participateError={participateError}
                                     clearError={clearError}

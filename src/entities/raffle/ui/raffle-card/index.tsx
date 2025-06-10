@@ -1,49 +1,85 @@
+'use client';
+
 import { Clock } from 'lucide-react';
+import { useUserStore } from '@/src/entities/user/model/store';
 import Image from 'next/image';
-import { useState } from 'react';
+import { RAFFLE_STATUS } from '../../constants';
 
 interface RaffleCardProps {
-    id: number;
-    restaurantName: string;
-    restaurantImage: string;
+    id: string;
+    restaurant_name: string;
+    restaurant_image: string;
     status: string;
+    isParticipated: boolean;
+    onParticipate?: (raffleId: string) => void;
+    start_datetime: string;
+    end_datetime: string;
 }
 
 export const RaffleCard = (raffle: RaffleCardProps) => {
+    const userId = useUserStore((state) => state.user?.id);
+
     // 일부 데이터가 없을 경우 샘플 데이터로 보완
     const displayData = {
-        name: raffle.restaurantName || '레스토랑 이름',
-        brand: raffle.restaurantName || '브랜드',
+        name: raffle.restaurant_name || '레스토랑 이름',
+        // brand: raffle.restaurant_name || '브랜드',
         originalPrice: '99,000원',
         rafflePrice: '990원',
         discount: '99%',
         deadline: '3월 19일 (수) 11:00 당첨자 발표 예정',
-        image: raffle.restaurantImage || '/default-image.jpg',
+        image: raffle.restaurant_image || '/default-image.jpg',
         timeLeft: '12:00:00',
     };
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const now = new Date().getTime();
+    const startTime = new Date(raffle.start_datetime).getTime();
+    const endTime = new Date(raffle.end_datetime).getTime();
 
-    // todo 응모 처리 로직 추가
-    const enterRaffle = async () => {
-        if (isSubmitting) return; // 중복 클릭 방지
-        setIsSubmitting(true);
-        try {
-            // todo 응모 처리 로직 추가
-            console.log(raffle.id, '응모하기');
+    const getRaffleStatus = () => {
+        if (now < startTime) return RAFFLE_STATUS.UPCOMING;
+        if (now > endTime) return RAFFLE_STATUS.ENDED;
+        return RAFFLE_STATUS.ONGOING;
+    };
 
-            // if (error: any) {
-            //     throw new Error('응모 처리 중 오류가 발생했습니다.');
-            // }
-        } catch (error) {
-            console.error('응모 오류:', error);
-        } finally {
-            // 디바운싱 처리
-            setTimeout(() => {
-                setIsSubmitting(false);
-            }, 1000);
+    const getButtonContent = () => {
+        if (raffle.isParticipated) {
+            return {
+                text: '응모 완료',
+                className: 'w-full mt-3 py-2 bg-gray-400 cursor-not-allowed rounded text-white font-medium',
+                disabled: true,
+            };
+        }
+
+        const status = getRaffleStatus();
+        switch (status) {
+            case RAFFLE_STATUS.UPCOMING:
+                const startDate = new Date(raffle.start_datetime);
+                const month = startDate.getMonth() + 1;
+                const date = startDate.getDate();
+                const hours = startDate.getHours().toString().padStart(2, '0');
+                const minutes = startDate.getMinutes().toString().padStart(2, '0');
+                return {
+                    text: `${month}월 ${date}일 ${hours}:${minutes} 오픈`,
+                    className: 'w-full mt-3 py-2 bg-gray-600 rounded text-white font-medium cursor-default',
+                    disabled: true,
+                };
+            case RAFFLE_STATUS.ENDED:
+                return {
+                    text: '종료된 래플',
+                    className: 'w-full mt-3 py-2 bg-gray-400 rounded text-white font-medium cursor-default',
+                    disabled: true,
+                };
+            default:
+                return {
+                    text: '응모하기',
+                    className:
+                        'w-full mt-3 py-2 bg-indigo-600 rounded text-white font-medium hover:bg-indigo-700 transition',
+                    disabled: false,
+                };
         }
     };
+
+    const buttonContent = getButtonContent();
 
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -68,7 +104,7 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
             <div className="p-4">
                 <div className="mb-2">
                     <h3 className="text-base font-bold mb-1">{displayData.name}</h3>
-                    <p className="text-sm text-gray-500">{displayData.brand}</p>
+                    {/* <p className="text-sm text-gray-500">{displayData.brand}</p> */}
                 </div>
 
                 <div className="flex items-end mb-3">
@@ -82,13 +118,13 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                     {displayData.deadline}
                 </div>
                 <button
-                    // onClick={enterRaffle}
+                    className={buttonContent.className}
                     onClick={() => {
-                        console.log(raffle);
+                        raffle.onParticipate?.(raffle.id);
                     }}
-                    className="w-full mt-3 py-2 bg-indigo-600 rounded text-white font-medium hover:bg-indigo-700 transition"
+                    disabled={buttonContent.disabled}
                 >
-                    응모하기
+                    {buttonContent.text}
                 </button>
             </div>
         </div>
