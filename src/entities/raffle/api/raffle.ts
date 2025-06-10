@@ -36,3 +36,13 @@ export const getRaffles = async (offset = 0, status: RaffleStatusType) => {
     if (error) throw error;
     return data;
 };
+
+export const getParticipationStatus = async (userId: string) => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.from('raffle_participant').select('raffle_id').eq('user_id', userId);
+
+    if (error) throw error;
+
+    return data.map((item) => item.raffle_id).filter(Boolean);
+};
