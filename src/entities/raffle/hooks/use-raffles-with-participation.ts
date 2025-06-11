@@ -1,11 +1,16 @@
 'use client';
 
 import { useMemo } from 'react';
-import { RAFFLE_STATUS, RaffleStatusType } from '../constants/status';
-import { useRaffles } from './use-raffles';
-import { useParticipationStatus } from './use-participation-status';
 
-export const useRafflesWithParticipation = (status: RaffleStatusType = RAFFLE_STATUS.ALL, userId?: string) => {
+import { RAFFLE_STATUS, RaffleStatusType } from '../constants/status';
+
+import { useParticipationStatus } from './use-participation-status';
+import { useRaffles } from './use-raffles';
+
+export const useRafflesWithParticipation = (
+    status: RaffleStatusType = RAFFLE_STATUS.ALL,
+    userId?: string
+) => {
     // 기존 훅들 조합
     const rafflesQuery = useRaffles(status);
     const participationQuery = useParticipationStatus(userId);
@@ -17,7 +22,7 @@ export const useRafflesWithParticipation = (status: RaffleStatusType = RAFFLE_ST
 
     // 래플 + 참여 상태 데이터 메모이제이션
     const rafflesWithParticipation = useMemo(() => {
-        return rafflesQuery.data.map((raffle) => ({
+        return rafflesQuery.data.map(raffle => ({
             ...raffle,
             isParticipated: participationMap.has(raffle.id),
         }));

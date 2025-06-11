@@ -1,5 +1,6 @@
 'use client';
 import { createClient } from '@/src/shared/utils/supabase/client';
+
 import { RAFFLE_STATUS, RaffleStatusType } from '../constants';
 
 export const getRaffles = async (offset = 0, status: RaffleStatusType) => {
@@ -40,9 +41,12 @@ export const getRaffles = async (offset = 0, status: RaffleStatusType) => {
 export const getParticipationStatus = async (userId: string) => {
     const supabase = createClient();
 
-    const { data, error } = await supabase.from('raffle_participant').select('raffle_id').eq('user_id', userId);
+    const { data, error } = await supabase
+        .from('raffle_participant')
+        .select('raffle_id')
+        .eq('user_id', userId);
 
     if (error) throw error;
 
-    return data.map((item) => item.raffle_id).filter(Boolean);
+    return data.map(item => item.raffle_id).filter(Boolean);
 };

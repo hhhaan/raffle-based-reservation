@@ -1,10 +1,13 @@
 'use client';
 
-import { Layout } from '@/src/widgets/layout';
-import { Clock, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { axiosClient } from '@/src/shared/utils';
 import { useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { Clock, Users } from 'lucide-react';
+
+import { axiosClient } from '@/src/shared/utils';
+import { Layout } from '@/src/widgets/layout';
 
 // 공통 카드 컴포넌트
 const RaffleCard = ({
@@ -17,7 +20,9 @@ const RaffleCard = ({
     borderColor = '',
 }) => {
     return (
-        <div className={`min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0 ${borderColor}`}>
+        <div
+            className={`min-w-[280px] bg-white rounded-lg shadow-sm overflow-hidden flex-shrink-0 ${borderColor}`}
+        >
             <div className="relative">
                 <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300"></div>
                 {badgeText && (
@@ -38,9 +43,13 @@ const RaffleCard = ({
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center">
                         {iconElement}
-                        <span className={`text-sm ${statusColor || 'text-gray-500'}`}>{statusText}</span>
+                        <span className={`text-sm ${statusColor || 'text-gray-500'}`}>
+                            {statusText}
+                        </span>
                     </div>
-                    <div className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded">확률 {item.odds}</div>
+                    <div className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded">
+                        확률 {item.odds}
+                    </div>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900">{item.price}</span>
@@ -162,7 +171,9 @@ export function HomeScreen() {
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h2 className="text-lg font-bold">🔥 마감 임박 래플</h2>
-                                <p className="text-sm text-gray-500">놓치지 마세요! 곧 마감됩니다</p>
+                                <p className="text-sm text-gray-500">
+                                    놓치지 마세요! 곧 마감됩니다
+                                </p>
                             </div>
                             <button className="text-sm text-indigo-600">더보기</button>
                         </div>
@@ -187,7 +198,9 @@ export function HomeScreen() {
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h2 className="text-lg font-bold">🏆 인기 래플</h2>
-                                <p className="text-sm text-gray-500">지금 가장 많이 참여하는 래플</p>
+                                <p className="text-sm text-gray-500">
+                                    지금 가장 많이 참여하는 래플
+                                </p>
                             </div>
                             <button className="text-sm text-indigo-600">더보기</button>
                         </div>

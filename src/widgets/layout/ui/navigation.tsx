@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
-import { Home, Bookmark, Ticket, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+
+import { Bookmark, Home, Ticket, User } from 'lucide-react';
 
 export const Navigation = () => {
     const router = useRouter();

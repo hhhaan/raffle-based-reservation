@@ -1,7 +1,9 @@
 'use client';
 
-import { Clock } from 'lucide-react';
 import Image from 'next/image';
+
+import { Clock } from 'lucide-react';
+
 import { RAFFLE_STATUS } from '../../constants';
 
 interface RaffleCardProps {
@@ -44,7 +46,8 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
         if (raffle.isSubmitting) {
             return {
                 text: '응모 중...',
-                className: 'w-full mt-3 py-2 bg-indigo-400 cursor-not-allowed rounded text-white font-medium',
+                className:
+                    'w-full mt-3 py-2 bg-indigo-400 cursor-not-allowed rounded text-white font-medium',
                 disabled: true,
             };
         }
@@ -52,7 +55,8 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
         if (raffle.isParticipated) {
             return {
                 text: '응모 완료',
-                className: 'w-full mt-3 py-2 bg-gray-400 cursor-not-allowed rounded text-white font-medium',
+                className:
+                    'w-full mt-3 py-2 bg-gray-400 cursor-not-allowed rounded text-white font-medium',
                 disabled: true,
             };
         }
@@ -67,13 +71,15 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                 const minutes = startDate.getMinutes().toString().padStart(2, '0');
                 return {
                     text: `${month}월 ${date}일 ${hours}:${minutes} 오픈`,
-                    className: 'w-full mt-3 py-2 bg-gray-600 rounded text-white font-medium cursor-default',
+                    className:
+                        'w-full mt-3 py-2 bg-gray-600 rounded text-white font-medium cursor-default',
                     disabled: true,
                 };
             case RAFFLE_STATUS.ENDED:
                 return {
                     text: '종료된 래플',
-                    className: 'w-full mt-3 py-2 bg-gray-400 rounded text-white font-medium cursor-default',
+                    className:
+                        'w-full mt-3 py-2 bg-gray-400 rounded text-white font-medium cursor-default',
                     disabled: true,
                 };
             default:
@@ -115,7 +121,9 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                 </div>
 
                 <div className="flex items-end mb-3">
-                    <div className="line-through text-xs text-gray-500 mr-2">{displayData.originalPrice}</div>
+                    <div className="line-through text-xs text-gray-500 mr-2">
+                        {displayData.originalPrice}
+                    </div>
                     <div className="text-base font-bold">{displayData.rafflePrice}</div>
                     <div className="text-red-500 text-sm ml-2">{displayData.discount}</div>
                 </div>

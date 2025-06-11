@@ -1,13 +1,16 @@
 'use client';
 
-import { Layout } from '@/src/widgets/layout';
-import { useRouter } from 'next/navigation';
 import { memo, useCallback } from 'react';
+
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
 import { Bookmark, Loader2 } from 'lucide-react';
-import { useRestaurantsWithFavorites } from '@/src/features/favorite/hooks';
+
 import { useUserStore } from '@/src/entities/user/model/store';
+import { useRestaurantsWithFavorites } from '@/src/features/favorite/hooks';
 import { useFavoriteToggle } from '@/src/features/favorite/hooks';
+import { Layout } from '@/src/widgets/layout';
 
 const RestaurantCard = ({ restaurant, isFavorite, onFavoriteToggle, isProcessing }: any) => {
     const router = useRouter();
@@ -32,7 +35,9 @@ const RestaurantCard = ({ restaurant, isFavorite, onFavoriteToggle, isProcessing
     );
 
     // 이미지 URL이 없는 경우 기본 이미지 사용
-    const imageUrl = restaurant.restaurant_imageCollection?.edges?.[0]?.node?.image_url || '/default-restaurant.jpg';
+    const imageUrl =
+        restaurant.restaurant_imageCollection?.edges?.[0]?.node?.image_url ||
+        '/default-restaurant.jpg';
 
     return (
         <div
@@ -105,7 +110,7 @@ RestaurantList.displayName = 'RestaurantList';
 
 export const RestaurantsScreen = () => {
     const { toggleFavorite, isProcessing } = useFavoriteToggle();
-    const userId = useUserStore((state) => state.user?.id);
+    const userId = useUserStore(state => state.user?.id);
     const { data: restaurants, isLoading } = useRestaurantsWithFavorites();
 
     console.log(restaurants);

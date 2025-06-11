@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { createClient } from '@/src/shared/utils/supabase/client';
+
 import { useUserStore } from '@/src/entities/user/model/store';
+import { createClient } from '@/src/shared/utils/supabase/client';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-    const getUser = useUserStore((state) => state.getUser);
-    const setUser = useUserStore((state) => state.setUser);
+    const getUser = useUserStore(state => state.getUser);
+    const setUser = useUserStore(state => state.setUser);
 
     useEffect(() => {
         // 초기 사용자 로드

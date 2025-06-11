@@ -1,17 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Layout } from '@/src/widgets/layout';
-import { RaffleCard } from '@/src/entities/raffle/ui/raffle-card';
-import { ArrowLeft, Heart, Search, Filter } from 'lucide-react';
-import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
+
+import { ArrowLeft, Filter, Heart, Search } from 'lucide-react';
+
 import { RAFFLE_STATUS, RaffleStatusType } from '@/src/entities/raffle/constants';
 import { useRafflesWithParticipation } from '@/src/entities/raffle/hooks';
+import { RaffleCard } from '@/src/entities/raffle/ui/raffle-card';
 import { useUserStore } from '@/src/entities/user/model/store';
+import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
+import { Layout } from '@/src/widgets/layout';
 
 export const RaffleScreen = () => {
     const [activeCategory, setActiveCategory] = useState<RaffleStatusType>(RAFFLE_STATUS.ALL);
-    const userId = useUserStore((state) => state.user?.id);
+    const userId = useUserStore(state => state.user?.id);
 
     const {
         data: raffles,
@@ -22,7 +24,12 @@ export const RaffleScreen = () => {
         isFetchingNextPage,
     } = useRafflesWithParticipation(activeCategory, userId);
 
-    const { participate, isSubmitting, error: participateError, reset: clearError } = useEnterRaffle();
+    const {
+        participate,
+        isSubmitting,
+        error: participateError,
+        reset: clearError,
+    } = useEnterRaffle();
 
     const categoryMap = {
         [RAFFLE_STATUS.ALL]: '전체',
@@ -119,7 +126,8 @@ export const RaffleScreen = () => {
                             const raffleCardProps = {
                                 ...raffle,
                                 restaurant_name: raffle.restaurant?.name,
-                                restaurant_image: raffle.restaurant?.restaurant_image?.[0]?.image_url,
+                                restaurant_image:
+                                    raffle.restaurant?.restaurant_image?.[0]?.image_url,
                             };
 
                             return (

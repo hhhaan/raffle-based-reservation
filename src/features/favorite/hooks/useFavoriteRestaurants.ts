@@ -1,9 +1,10 @@
 'use client';
 
-import { useUserStore } from '@/src/entities/user/model/store';
-import { createClient } from '@/src/shared/utils/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+
+import { useUserStore } from '@/src/entities/user/model/store';
 import { useFavorites } from '@/src/features/favorite/api';
+import { createClient } from '@/src/shared/utils/supabase/client';
 
 interface FavoriteRestaurantResponse {
     id: number;
@@ -46,7 +47,7 @@ const getFavoriteRestaurants = async (userId: string) => {
 };
 
 export const useFavoriteRestaurants = () => {
-    const userId = useUserStore((state) => state.user?.id);
+    const userId = useUserStore(state => state.user?.id);
     const { data: favorites } = useFavorites();
 
     const { data, isLoading } = useQuery({

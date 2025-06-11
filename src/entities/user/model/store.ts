@@ -1,9 +1,10 @@
 'use client';
 
+import { User } from '@supabase/supabase-js';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
 import { createClient } from '@/src/shared/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
 
 interface UserInfo {
     id: string;
@@ -39,7 +40,7 @@ const extractUserInfo = (user: User | null): UserInfo | null => {
 
 export const useUserStore = create<UserState>()(
     persist(
-        (set) => ({
+        set => ({
             user: null,
             userInfo: null,
             error: null,
@@ -129,7 +130,7 @@ export const useUserStore = create<UserState>()(
                     removeItem: () => {},
                 };
             }),
-            partialize: (state) => ({
+            partialize: state => ({
                 userInfo: state.userInfo,
             }),
         }

@@ -1,11 +1,14 @@
 'use client';
 
-import { useUserStore } from '@/src/entities/user/model/store';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { useUserStore } from '@/src/entities/user/model/store';
+
 import { enterRaffle } from '../api';
 import { RaffleErrorCode } from '../types';
-import { useState } from 'react';
 
 // 에러 메시지 매핑
 const getErrorMessage = (errorCode?: RaffleErrorCode): string => {
@@ -26,14 +29,14 @@ const getErrorMessage = (errorCode?: RaffleErrorCode): string => {
 };
 
 export const useEnterRaffle = () => {
-    const userId = useUserStore((state) => state.user?.id);
-    const redirectToLogin = useUserStore((state) => state.redirectToLogin);
+    const userId = useUserStore(state => state.user?.id);
+    const redirectToLogin = useUserStore(state => state.redirectToLogin);
     const queryClient = useQueryClient();
     const [isProcessing, setIsProcessing] = useState(false);
 
     const mutation = useMutation({
         mutationFn: enterRaffle,
-        onSuccess: (data) => {
+        onSuccess: data => {
             if (data.success) {
                 queryClient.invalidateQueries({ queryKey: ['participation-status'] });
             }
@@ -71,7 +74,7 @@ export const useEnterRaffle = () => {
         toast.promise(toastPromise, {
             loading: '래플 응모 중...',
             success: '래플 응모 성공!',
-            error: (error) => error?.message || '응모 중 오류가 발생했습니다.',
+            error: error => error?.message || '응모 중 오류가 발생했습니다.',
         });
     };
 

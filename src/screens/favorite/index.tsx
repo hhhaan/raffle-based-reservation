@@ -1,15 +1,17 @@
 'use client';
 
-import { Layout } from '@/src/widgets/layout';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertTriangle } from 'lucide-react';
-import { useFavoriteToggle } from '@/src/features/favorite/hooks';
-import { useFavoriteRestaurants } from '@/src/features/favorite/hooks';
+
+import { AlertTriangle, Loader2 } from 'lucide-react';
+
 import { RestaurantCard } from '@/src/entities/restaurant/ui/restaurant-card';
 import { useUserStore } from '@/src/entities/user/model/store';
+import { useFavoriteToggle } from '@/src/features/favorite/hooks';
+import { useFavoriteRestaurants } from '@/src/features/favorite/hooks';
+import { Layout } from '@/src/widgets/layout';
 
 export const FavoriteScreen = () => {
-    const userId = useUserStore((state) => state.user?.id);
+    const userId = useUserStore(state => state.user?.id);
     const router = useRouter();
 
     const { toggleFavorite, isProcessing, error } = useFavoriteToggle();
@@ -42,15 +44,19 @@ export const FavoriteScreen = () => {
                 )}
 
                 {!restaurants?.length ? (
-                    <div className="text-center p-6 bg-gray-100 rounded-lg">즐겨찾기한 레스토랑이 없습니다.</div>
+                    <div className="text-center p-6 bg-gray-100 rounded-lg">
+                        즐겨찾기한 레스토랑이 없습니다.
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-4">
-                        {restaurants.map((restaurant) => (
+                        {restaurants.map(restaurant => (
                             <RestaurantCard
                                 key={restaurant.id}
                                 restaurant={{
                                     ...restaurant,
-                                    imageUrl: restaurant.restaurant_image?.[0]?.image_url || '/default-restaurant.jpg',
+                                    imageUrl:
+                                        restaurant.restaurant_image?.[0]?.image_url ||
+                                        '/default-restaurant.jpg',
                                 }}
                                 userId={userId!}
                                 onFavoriteToggle={toggleFavorite}

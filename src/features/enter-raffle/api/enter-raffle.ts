@@ -1,4 +1,5 @@
 import { createClient } from '@/src/shared/utils/supabase/client';
+
 import { RaffleResult } from '../types';
 
 export const enterRaffle = async ({
