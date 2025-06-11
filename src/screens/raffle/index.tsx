@@ -22,7 +22,7 @@ export const RaffleScreen = () => {
         isFetchingNextPage,
     } = useRafflesWithParticipation(activeCategory, userId);
 
-    const { participate, isLoading: isSubmitting, error: participateError, reset: clearError } = useEnterRaffle();
+    const { participate, isSubmitting, error: participateError, reset: clearError } = useEnterRaffle();
 
     const categoryMap = {
         [RAFFLE_STATUS.ALL]: '전체',

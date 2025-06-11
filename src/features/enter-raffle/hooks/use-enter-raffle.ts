@@ -5,6 +5,7 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { enterRaffle } from '../api';
 import { RaffleErrorCode } from '../types';
+import { useState } from 'react';
 
 // 에러 메시지 매핑
 const getErrorMessage = (errorCode?: RaffleErrorCode): string => {
@@ -28,6 +29,7 @@ export const useEnterRaffle = () => {
     const userId = useUserStore((state) => state.user?.id);
     const redirectToLogin = useUserStore((state) => state.redirectToLogin);
     const queryClient = useQueryClient();
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const mutation = useMutation({
         mutationFn: enterRaffle,
@@ -39,11 +41,15 @@ export const useEnterRaffle = () => {
     });
 
     const participate = async (raffleId: number) => {
+        // 이미 처리 중이면 중복 실행 방지
+        if (mutation.isPending || isProcessing) return;
         if (!userId) {
             redirectToLogin();
             return;
         }
+        setIsProcessing(true);
 
+        // toast.promise로 1초 지연과 함께 처리
         const toastPromise = new Promise<any>((resolve, reject) => {
             setTimeout(async () => {
                 try {
@@ -56,6 +62,8 @@ export const useEnterRaffle = () => {
                     }
                 } catch (error) {
                     reject(error);
+                } finally {
+                    setIsProcessing(false);
                 }
             }, 1000);
         });
@@ -69,9 +77,12 @@ export const useEnterRaffle = () => {
 
     return {
         participate,
-        isLoading: mutation.isPending,
+        isSubmitting: mutation.isPending || isProcessing,
         error: mutation.error,
         isError: mutation.isError,
-        reset: mutation.reset,
+        reset: () => {
+            mutation.reset();
+            setIsProcessing(false);
+        },
     };
 };

@@ -1,7 +1,6 @@
 'use client';
 
 import { Clock } from 'lucide-react';
-import { useUserStore } from '@/src/entities/user/model/store';
 import Image from 'next/image';
 import { RAFFLE_STATUS } from '../../constants';
 
@@ -14,11 +13,10 @@ interface RaffleCardProps {
     onParticipate?: (raffleId: string) => void;
     start_datetime: string;
     end_datetime: string;
+    isSubmitting?: boolean;
 }
 
 export const RaffleCard = (raffle: RaffleCardProps) => {
-    const userId = useUserStore((state) => state.user?.id);
-
     // 일부 데이터가 없을 경우 샘플 데이터로 보완
     const displayData = {
         name: raffle.restaurant_name || '레스토랑 이름',
@@ -42,6 +40,15 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
     };
 
     const getButtonContent = () => {
+        // 제출 중일 때
+        if (raffle.isSubmitting) {
+            return {
+                text: '응모 중...',
+                className: 'w-full mt-3 py-2 bg-indigo-400 cursor-not-allowed rounded text-white font-medium',
+                disabled: true,
+            };
+        }
+
         if (raffle.isParticipated) {
             return {
                 text: '응모 완료',
@@ -120,7 +127,9 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                 <button
                     className={buttonContent.className}
                     onClick={() => {
-                        raffle.onParticipate?.(raffle.id);
+                        if (!buttonContent.disabled && !raffle.isSubmitting) {
+                            raffle.onParticipate?.(raffle.id);
+                        }
                     }}
                     disabled={buttonContent.disabled}
                 >
