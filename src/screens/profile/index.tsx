@@ -1,8 +1,9 @@
 'use client';
 
-import { Layout } from '@/src/widgets/layout';
-import { useUserStore } from '@/src/entities/user/model/store';
 import Image from 'next/image';
+
+import { useUserStore } from '@/src/entities/user/model/store';
+import { Layout } from '@/src/widgets/layout';
 
 export function ProfileScreen() {
     const { userInfo, signOut, loading } = useUserStore();
@@ -33,7 +34,12 @@ export function ProfileScreen() {
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-indigo-500">
-                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-10 h-10"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -90,7 +96,12 @@ export function ProfileScreen() {
                         <button className="w-full py-3 flex justify-between items-center text-left">
                             <span className="font-medium">참여한 래플</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -104,7 +115,12 @@ export function ProfileScreen() {
                         <button className="w-full py-3 flex justify-between items-center text-left border-t border-gray-100">
                             <span className="font-medium">예약 내역</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -118,7 +134,12 @@ export function ProfileScreen() {
                         <button className="w-full py-3 flex justify-between items-center text-left border-t border-gray-100">
                             <span className="font-medium">즐겨찾기</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -133,13 +154,20 @@ export function ProfileScreen() {
 
                 {/* 설정 및 로그아웃 */}
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h2 className="text-xl font-semibold mb-4 text-indigo-800 border-b border-indigo-100 pb-2">설정</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-indigo-800 border-b border-indigo-100 pb-2">
+                        설정
+                    </h2>
 
                     <div className="space-y-3">
                         <button className="w-full py-3 flex justify-between items-center text-left">
                             <span className="font-medium">알림 설정</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -153,7 +181,12 @@ export function ProfileScreen() {
                         <button className="w-full py-3 flex justify-between items-center text-left border-t border-gray-100">
                             <span className="font-medium">고객센터</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -167,7 +200,12 @@ export function ProfileScreen() {
                         <button className="w-full py-3 flex justify-between items-center text-left border-t border-gray-100">
                             <span className="font-medium text-red-500">회원 탈퇴</span>
                             <span className="text-gray-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"

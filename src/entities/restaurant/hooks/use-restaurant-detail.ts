@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { getRestaurantDetail } from '../api/restaurant-detail';
 
 export const useRestaurantDetail = (id: number) => {

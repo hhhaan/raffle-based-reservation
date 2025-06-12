@@ -1,11 +1,13 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { useUserStore } from '@/src/entities/user/model/store';
+
 import { getUserFavorites } from './api';
 
 export const useFavorites = () => {
-    const userId = useUserStore((state) => state.user?.id);
+    const userId = useUserStore(state => state.user?.id);
 
     const { data = [], isLoading } = useQuery({
         queryKey: ['favorites', userId],

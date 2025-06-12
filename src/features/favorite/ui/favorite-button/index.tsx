@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
+
 import { Bookmark, Loader2 } from 'lucide-react';
+
 import { useUserStore } from '@/src/entities/user/model/store';
 
 interface FavoriteButtonProps {

@@ -1,44 +1,52 @@
 'use client';
 import { createClient } from '@/src/shared/utils/supabase/client';
 
-export const getRaffles = async () => {
+import { RAFFLE_STATUS, RaffleStatusType } from '../constants';
+
+export const getRaffles = async (offset = 0, status: RaffleStatusType) => {
+    const supabase = createClient();
+
+    let query = supabase.from('raffle').select(
+        `id,
+        restaurant_id,
+        start_datetime,
+        end_datetime,
+        available_seats,
+        restaurant (
+            name,
+            restaurant_image (
+                image_url,
+                is_primary
+            )
+        )
+    `
+    );
+
+    const now = new Date().toISOString();
+
+    if (status === RAFFLE_STATUS.ONGOING) {
+        query = query.lte('start_datetime', now).gte('end_datetime', now);
+    } else if (status === RAFFLE_STATUS.UPCOMING) {
+        query = query.gt('start_datetime', now);
+    } else if (status === RAFFLE_STATUS.ENDED) {
+        query = query.lt('end_datetime', now);
+    }
+
+    const { data, error } = await query.range(offset, offset + 9);
+
+    if (error) throw error;
+    return data;
+};
+
+export const getParticipationStatus = async (userId: string) => {
     const supabase = createClient();
 
     const { data, error } = await supabase
-        .from('raffle')
-        .select(
-            `
-            id,
-            status,
-            restaurant_id,
-            start_datetime,
-            end_datetime,
-            available_seats,
-            restaurant (
-                name,
-                restaurant_image!restaurant_image_restaurant_id_fkey (
-                    image_url,
-                    is_primary
-                )
-            )
-        `
-        )
-        .order('start_datetime', { ascending: false });
+        .from('raffle_participant')
+        .select('raffle_id')
+        .eq('user_id', userId);
 
-    if (error) {
-        console.error('Raffles 조회 오류:', error);
-        throw error;
-    }
+    if (error) throw error;
 
-    return (
-        data?.map((raffle) => ({
-            ...raffle,
-            start_datetime: raffle.start_datetime ? new Date(raffle.start_datetime) : null,
-            end_datetime: raffle.end_datetime ? new Date(raffle.end_datetime) : null,
-            restaurant: {
-                ...raffle.restaurant,
-                primary_image: raffle.restaurant?.restaurant_image?.find((img) => img.is_primary)?.image_url || null,
-            },
-        })) || []
-    );
+    return data.map(item => item.raffle_id).filter(Boolean);
 };

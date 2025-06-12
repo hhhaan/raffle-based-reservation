@@ -1,55 +1,105 @@
-import { Clock } from 'lucide-react';
+'use client';
+
+import { useMemo } from 'react';
+
 import Image from 'next/image';
-import { useState } from 'react';
+
+import { Clock } from 'lucide-react';
+
+import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
+
+import { RAFFLE_STATUS } from '../../constants';
 
 interface RaffleCardProps {
     id: number;
-    restaurantName: string;
-    restaurantImage: string;
+    restaurant_name: string;
+    restaurant_image: string;
     status: string;
+    isParticipated: boolean;
+    start_datetime: string;
+    end_datetime: string;
 }
 
 export const RaffleCard = (raffle: RaffleCardProps) => {
-    // 일부 데이터가 없을 경우 샘플 데이터로 보완
+    const { participate, isSubmitting } = useEnterRaffle();
+
+    const { raffleStatus, timeStamps } = useMemo(() => {
+        const now = Date.now();
+        const start = new Date(raffle.start_datetime).getTime();
+        const end = new Date(raffle.end_datetime).getTime();
+
+        let status;
+        if (now < start) status = RAFFLE_STATUS.UPCOMING;
+        else if (now > end) status = RAFFLE_STATUS.ENDED;
+        else status = RAFFLE_STATUS.ONGOING;
+
+        return { raffleStatus: status, timeStamps: { start, end } };
+    }, [raffle.start_datetime, raffle.end_datetime]);
+
     const displayData = {
-        name: raffle.restaurantName || '레스토랑 이름',
-        brand: raffle.restaurantName || '브랜드',
+        name: raffle.restaurant_name || '레스토랑 이름',
         originalPrice: '99,000원',
         rafflePrice: '990원',
         discount: '99%',
         deadline: '3월 19일 (수) 11:00 당첨자 발표 예정',
-        image: raffle.restaurantImage || '/default-image.jpg',
+        image: raffle.restaurant_image || '/default-image.jpg',
         timeLeft: '12:00:00',
     };
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const getButtonContent = () => {
+        if (isSubmitting) {
+            return {
+                text: '응모 중...',
+                className:
+                    'w-full mt-3 py-2 bg-indigo-400 cursor-not-allowed rounded text-white font-medium',
+                disabled: true,
+            };
+        }
 
-    // todo 응모 처리 로직 추가
-    const enterRaffle = async () => {
-        if (isSubmitting) return; // 중복 클릭 방지
-        setIsSubmitting(true);
-        try {
-            // todo 응모 처리 로직 추가
-            console.log(raffle.id, '응모하기');
+        if (raffle.isParticipated) {
+            return {
+                text: '응모 완료',
+                className:
+                    'w-full mt-3 py-2 bg-gray-400 cursor-not-allowed rounded text-white font-medium',
+                disabled: true,
+            };
+        }
 
-            // if (error: any) {
-            //     throw new Error('응모 처리 중 오류가 발생했습니다.');
-            // }
-        } catch (error) {
-            console.error('응모 오류:', error);
-        } finally {
-            // 디바운싱 처리
-            setTimeout(() => {
-                setIsSubmitting(false);
-            }, 1000);
+        switch (raffleStatus) {
+            case RAFFLE_STATUS.UPCOMING:
+                const startDate = new Date(timeStamps.start);
+                const month = startDate.getMonth() + 1;
+                const date = startDate.getDate();
+                const hours = startDate.getHours();
+                const minutes = startDate.getMinutes();
+                return {
+                    text: `${month}월 ${date}일 ${hours}:${minutes} 오픈`,
+                    className:
+                        'w-full mt-3 py-2 bg-gray-600 rounded text-white font-medium cursor-default',
+                    disabled: true,
+                };
+            case RAFFLE_STATUS.ENDED:
+                return {
+                    text: '종료된 래플',
+                    className:
+                        'w-full mt-3 py-2 bg-gray-400 rounded text-white font-medium cursor-default',
+                    disabled: true,
+                };
+            default:
+                return {
+                    text: '응모하기',
+                    className:
+                        'w-full mt-3 py-2 bg-indigo-600 rounded text-white font-medium hover:bg-indigo-700 transition',
+                    disabled: false,
+                };
         }
     };
 
+    const buttonContent = getButtonContent();
+
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {/* 이미지 섹션 */}
             <div className="relative">
-                {/* next/image 에러 방지를 위해 임시로 일반 img 태그 사용 */}
                 <Image
                     src={displayData.image}
                     alt={displayData.name}
@@ -64,15 +114,15 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                 </div>
             </div>
 
-            {/* 정보 섹션 */}
             <div className="p-4">
                 <div className="mb-2">
                     <h3 className="text-base font-bold mb-1">{displayData.name}</h3>
-                    <p className="text-sm text-gray-500">{displayData.brand}</p>
                 </div>
 
                 <div className="flex items-end mb-3">
-                    <div className="line-through text-xs text-gray-500 mr-2">{displayData.originalPrice}</div>
+                    <div className="line-through text-xs text-gray-500 mr-2">
+                        {displayData.originalPrice}
+                    </div>
                     <div className="text-base font-bold">{displayData.rafflePrice}</div>
                     <div className="text-red-500 text-sm ml-2">{displayData.discount}</div>
                 </div>
@@ -81,14 +131,17 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                     <Clock className="w-3 h-3 mr-1 text-indigo-600" />
                     {displayData.deadline}
                 </div>
+
                 <button
-                    // onClick={enterRaffle}
+                    className={buttonContent.className}
                     onClick={() => {
-                        console.log(raffle);
+                        if (!buttonContent.disabled) {
+                            participate(raffle.id);
+                        }
                     }}
-                    className="w-full mt-3 py-2 bg-indigo-600 rounded text-white font-medium hover:bg-indigo-700 transition"
+                    disabled={buttonContent.disabled}
                 >
-                    응모하기
+                    {buttonContent.text}
                 </button>
             </div>
         </div>

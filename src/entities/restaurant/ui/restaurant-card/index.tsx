@@ -1,8 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
+
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
 import { FavoriteButton } from '@/src/features/favorite/ui/favorite-button';
 
 export interface ToggleFavoriteParams {
@@ -26,7 +28,12 @@ interface RestaurantCardProps {
     onClick?: () => void;
 }
 
-export const RestaurantCard = ({ restaurant, onFavoriteToggle, isProcessing, userId }: RestaurantCardProps) => {
+export const RestaurantCard = ({
+    restaurant,
+    onFavoriteToggle,
+    isProcessing,
+    userId,
+}: RestaurantCardProps) => {
     const router = useRouter();
 
     // 카드 클릭 핸들러
@@ -41,7 +48,11 @@ export const RestaurantCard = ({ restaurant, onFavoriteToggle, isProcessing, use
 
     // 즐겨찾기 토글 핸들러 - FavoriteButton에 전달할 콜백
     const handleFavoriteToggle = useCallback(() => {
-        onFavoriteToggle({ userId, restaurantId: Number(restaurant.id), isFavorite: restaurant.isFavorite });
+        onFavoriteToggle({
+            userId,
+            restaurantId: Number(restaurant.id),
+            isFavorite: restaurant.isFavorite,
+        });
     }, [onFavoriteToggle, restaurant.id, restaurant.isFavorite, userId]);
 
     // 이미지 URL이 없는 경우 기본 이미지 사용

@@ -1,7 +1,8 @@
 'use client';
 
-import { Navigation } from './ui/navigation';
 import { Header } from './ui/header';
+import { Navigation } from './ui/navigation';
+
 import '@/src/shared/lib/vendor/vendor.ts';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {

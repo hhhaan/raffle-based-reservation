@@ -1,6 +1,11 @@
-import type { Metadata } from 'next';
+import { Toaster } from 'react-hot-toast';
+
 import { Geist, Geist_Mono } from 'next/font/google';
+
 import Provider from '@/src/app/providers/provider';
+
+import type { Metadata } from 'next';
+
 import './styles/globals.css';
 
 const geistSans = Geist({
@@ -26,7 +31,10 @@ export default function App({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <Provider>{children}</Provider>
+                <Provider>
+                    <Toaster position="bottom-center" />
+                    {children}
+                </Provider>
             </body>
         </html>
     );

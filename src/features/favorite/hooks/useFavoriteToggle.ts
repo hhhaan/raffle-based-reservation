@@ -1,8 +1,10 @@
 'use client';
 
-import { createClient } from '@/src/shared/utils/supabase/client';
+import { useCallback, useState } from 'react';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useCallback } from 'react';
+
+import { createClient } from '@/src/shared/utils/supabase/client';
 
 interface ToggleFavoriteParams {
     userId: string;
@@ -20,7 +22,9 @@ const toggleFavorite = async ({ userId, restaurantId, isFavorite }: ToggleFavori
             .eq('restaurant_id', restaurantId);
         if (error) throw error;
     } else {
-        const { error } = await supabase.from('favorites').insert({ user_id: userId, restaurant_id: restaurantId });
+        const { error } = await supabase
+            .from('favorites')
+            .insert({ user_id: userId, restaurant_id: restaurantId });
         if (error) throw error;
     }
 };
@@ -30,11 +34,11 @@ export const useFavoriteToggle = () => {
     const [processingIds, setProcessingIds] = useState<Set<number>>(new Set());
 
     const addProcessingId = useCallback((id: number) => {
-        setProcessingIds((prev) => new Set([...prev, id]));
+        setProcessingIds(prev => new Set([...prev, id]));
     }, []);
 
     const removeProcessingId = useCallback((id: number) => {
-        setProcessingIds((prev) => {
+        setProcessingIds(prev => {
             const newSet = new Set(prev);
             newSet.delete(id);
             return newSet;
@@ -55,7 +59,7 @@ export const useFavoriteToggle = () => {
             // 낙관적 업데이트
             queryClient.setQueryData(['favorites', userId], (old: number[] = []) => {
                 if (isFavorite) {
-                    return old.filter((id) => id !== restaurantId);
+                    return old.filter(id => id !== restaurantId);
                 } else {
                     return [...old, restaurantId];
                 }
@@ -74,7 +78,10 @@ export const useFavoriteToggle = () => {
             console.error('Failed to toggle favorite:', error);
             // 이전 상태로 롤백
             if (context?.previousFavorites) {
-                queryClient.setQueryData(['favorites', variables.userId], context.previousFavorites);
+                queryClient.setQueryData(
+                    ['favorites', variables.userId],
+                    context.previousFavorites
+                );
                 console.log('rolled back');
             }
         },

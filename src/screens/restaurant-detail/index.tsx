@@ -1,8 +1,9 @@
 'use client';
 
-import { Layout } from '@/src/widgets/layout';
 import Image from 'next/image';
+
 import { useRestaurantDetail } from '@/src/entities/restaurant/hooks';
+import { Layout } from '@/src/widgets/layout';
 
 export const RestaurantDetailScreen = ({ id }: { id: string }) => {
     const { data: restaurant, isLoading, error } = useRestaurantDetail(parseInt(id));
@@ -12,7 +13,7 @@ export const RestaurantDetailScreen = ({ id }: { id: string }) => {
     if (!restaurant) return <div>레스토랑 정보를 찾을 수 없습니다</div>;
 
     // 메인 이미지 찾기
-    const primaryImage = restaurant.restaurant_image?.find((img) => img.is_primary)?.image_url;
+    const primaryImage = restaurant.restaurant_image?.find(img => img.is_primary)?.image_url;
 
     return (
         <Layout>
@@ -43,7 +44,9 @@ export const RestaurantDetailScreen = ({ id }: { id: string }) => {
                         <div className="flex justify-between items-start mb-4">
                             <h1 className="text-3xl font-bold">{restaurant.name}</h1>
                             <div className="flex items-center gap-2">
-                                <span className="bg-indigo-600 text-white px-2 py-1 rounded-md font-bold">4.5</span>
+                                <span className="bg-indigo-600 text-white px-2 py-1 rounded-md font-bold">
+                                    4.5
+                                </span>
                                 <span className="text-gray-500">₩₩₩</span>
                             </div>
                         </div>
@@ -71,14 +74,16 @@ export const RestaurantDetailScreen = ({ id }: { id: string }) => {
                                 인기 메뉴
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
-                                {['시그니처 스테이크', '해산물 파스타', '트러플 리조또'].map((dish, index) => (
-                                    <div key={index} className="flex gap-3 items-center">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
-                                            <span className="text-xs text-gray-500">사진</span>
+                                {['시그니처 스테이크', '해산물 파스타', '트러플 리조또'].map(
+                                    (dish, index) => (
+                                        <div key={index} className="flex gap-3 items-center">
+                                            <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
+                                                <span className="text-xs text-gray-500">사진</span>
+                                            </div>
+                                            <span className="font-medium">{dish}</span>
                                         </div>
-                                        <span className="font-medium">{dish}</span>
-                                    </div>
-                                ))}
+                                    )
+                                )}
                             </div>
                         </div>
 
@@ -158,14 +163,16 @@ export const RestaurantDetailScreen = ({ id }: { id: string }) => {
                                 편의 시설
                             </h2>
                             <div className="flex flex-wrap gap-2">
-                                {['주차 가능', '무료 WiFi', '카드 결제', '예약 필수'].map((facility, index) => (
-                                    <span
-                                        key={index}
-                                        className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
-                                    >
-                                        {facility}
-                                    </span>
-                                ))}
+                                {['주차 가능', '무료 WiFi', '카드 결제', '예약 필수'].map(
+                                    (facility, index) => (
+                                        <span
+                                            key={index}
+                                            className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
+                                        >
+                                            {facility}
+                                        </span>
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
