@@ -10,7 +10,6 @@ import { useUserStore } from '@/src/entities/user/model/store';
 import { enterRaffle } from '../api';
 import { RaffleErrorCode } from '../types';
 
-// 에러 메시지 매핑
 const getErrorMessage = (errorCode?: RaffleErrorCode): string => {
     switch (errorCode) {
         case 'RAFFLE_NOT_FOUND':
@@ -36,23 +35,45 @@ export const useEnterRaffle = () => {
 
     const mutation = useMutation({
         mutationFn: enterRaffle,
-        onSuccess: data => {
-            if (data.success) {
-                queryClient.invalidateQueries({ queryKey: ['participation-status'] });
+        onMutate: async ({ raffleId }) => {
+            await queryClient.cancelQueries({
+                queryKey: ['participation-status', userId],
+            });
+
+            const previousData = queryClient.getQueryData<number[]>([
+                'participation-status',
+                userId,
+            ]);
+
+            queryClient.setQueryData<number[]>(['participation-status', userId], (old = []) => {
+                return old.includes(raffleId) ? old : [...old, raffleId];
+            });
+
+            return { previousData };
+        },
+        onError: (err, variables, context) => {
+            if (context?.previousData !== undefined) {
+                queryClient.setQueryData(['participation-status', userId], context.previousData);
             }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['participation-status', userId],
+                refetchType: 'none',
+            });
         },
     });
 
     const participate = async (raffleId: number) => {
-        // 이미 처리 중이면 중복 실행 방지
         if (mutation.isPending || isProcessing) return;
+
         if (!userId) {
             redirectToLogin();
             return;
         }
+
         setIsProcessing(true);
 
-        // toast.promise로 1초 지연과 함께 처리
         const toastPromise = new Promise<any>((resolve, reject) => {
             setTimeout(async () => {
                 try {
@@ -73,7 +94,7 @@ export const useEnterRaffle = () => {
 
         toast.promise(toastPromise, {
             loading: '래플 응모 중...',
-            success: '래플 응모 성공!',
+            success: '래플 응모 완료!',
             error: error => error?.message || '응모 중 오류가 발생했습니다.',
         });
     };

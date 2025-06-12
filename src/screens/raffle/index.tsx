@@ -8,7 +8,6 @@ import { RAFFLE_STATUS, RaffleStatusType } from '@/src/entities/raffle/constants
 import { useRafflesWithParticipation } from '@/src/entities/raffle/hooks';
 import { RaffleCard } from '@/src/entities/raffle/ui/raffle-card';
 import { useUserStore } from '@/src/entities/user/model/store';
-import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
 import { Layout } from '@/src/widgets/layout';
 
 export const RaffleScreen = () => {
@@ -23,13 +22,6 @@ export const RaffleScreen = () => {
         hasNextPage,
         isFetchingNextPage,
     } = useRafflesWithParticipation(activeCategory, userId);
-
-    const {
-        participate,
-        isSubmitting,
-        error: participateError,
-        reset: clearError,
-    } = useEnterRaffle();
 
     const categoryMap = {
         [RAFFLE_STATUS.ALL]: '전체',
@@ -107,18 +99,6 @@ export const RaffleScreen = () => {
                     </div>
                 </div>
 
-                {/* 에러 메시지 표시 */}
-                {participateError && (
-                    <div className="px-4 mb-4">
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
-                            {participateError.message}
-                            <button onClick={clearError} className="ml-2 text-red-800 underline">
-                                닫기
-                            </button>
-                        </div>
-                    </div>
-                )}
-
                 {/* 래플 목록 */}
                 <div className="px-4">
                     <div className="space-y-4">
@@ -130,17 +110,7 @@ export const RaffleScreen = () => {
                                     raffle.restaurant?.restaurant_image?.[0]?.image_url,
                             };
 
-                            return (
-                                <RaffleCard
-                                    key={raffle.id}
-                                    {...raffleCardProps}
-                                    onParticipate={participate}
-                                    isParticipated={raffle.isParticipated}
-                                    isSubmitting={isSubmitting}
-                                    participateError={participateError}
-                                    clearError={clearError}
-                                />
-                            );
+                            return <RaffleCard key={raffle.id} {...raffleCardProps} />;
                         })}
                     </div>
                 </div>

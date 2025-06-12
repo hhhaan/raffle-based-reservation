@@ -1,28 +1,43 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import Image from 'next/image';
 
 import { Clock } from 'lucide-react';
 
+import { useEnterRaffle } from '@/src/features/enter-raffle/hooks';
+
 import { RAFFLE_STATUS } from '../../constants';
 
 interface RaffleCardProps {
-    id: string;
+    id: number;
     restaurant_name: string;
     restaurant_image: string;
     status: string;
     isParticipated: boolean;
-    onParticipate?: (raffleId: string) => void;
     start_datetime: string;
     end_datetime: string;
-    isSubmitting?: boolean;
 }
 
 export const RaffleCard = (raffle: RaffleCardProps) => {
-    // 일부 데이터가 없을 경우 샘플 데이터로 보완
+    const { participate, isSubmitting } = useEnterRaffle();
+
+    const { raffleStatus, timeStamps } = useMemo(() => {
+        const now = Date.now();
+        const start = new Date(raffle.start_datetime).getTime();
+        const end = new Date(raffle.end_datetime).getTime();
+
+        let status;
+        if (now < start) status = RAFFLE_STATUS.UPCOMING;
+        else if (now > end) status = RAFFLE_STATUS.ENDED;
+        else status = RAFFLE_STATUS.ONGOING;
+
+        return { raffleStatus: status, timeStamps: { start, end } };
+    }, [raffle.start_datetime, raffle.end_datetime]);
+
     const displayData = {
         name: raffle.restaurant_name || '레스토랑 이름',
-        // brand: raffle.restaurant_name || '브랜드',
         originalPrice: '99,000원',
         rafflePrice: '990원',
         discount: '99%',
@@ -31,19 +46,8 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
         timeLeft: '12:00:00',
     };
 
-    const now = new Date().getTime();
-    const startTime = new Date(raffle.start_datetime).getTime();
-    const endTime = new Date(raffle.end_datetime).getTime();
-
-    const getRaffleStatus = () => {
-        if (now < startTime) return RAFFLE_STATUS.UPCOMING;
-        if (now > endTime) return RAFFLE_STATUS.ENDED;
-        return RAFFLE_STATUS.ONGOING;
-    };
-
     const getButtonContent = () => {
-        // 제출 중일 때
-        if (raffle.isSubmitting) {
+        if (isSubmitting) {
             return {
                 text: '응모 중...',
                 className:
@@ -61,14 +65,13 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
             };
         }
 
-        const status = getRaffleStatus();
-        switch (status) {
+        switch (raffleStatus) {
             case RAFFLE_STATUS.UPCOMING:
-                const startDate = new Date(raffle.start_datetime);
+                const startDate = new Date(timeStamps.start);
                 const month = startDate.getMonth() + 1;
                 const date = startDate.getDate();
-                const hours = startDate.getHours().toString().padStart(2, '0');
-                const minutes = startDate.getMinutes().toString().padStart(2, '0');
+                const hours = startDate.getHours();
+                const minutes = startDate.getMinutes();
                 return {
                     text: `${month}월 ${date}일 ${hours}:${minutes} 오픈`,
                     className:
@@ -96,9 +99,7 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
 
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {/* 이미지 섹션 */}
             <div className="relative">
-                {/* next/image 에러 방지를 위해 임시로 일반 img 태그 사용 */}
                 <Image
                     src={displayData.image}
                     alt={displayData.name}
@@ -113,11 +114,9 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                 </div>
             </div>
 
-            {/* 정보 섹션 */}
             <div className="p-4">
                 <div className="mb-2">
                     <h3 className="text-base font-bold mb-1">{displayData.name}</h3>
-                    {/* <p className="text-sm text-gray-500">{displayData.brand}</p> */}
                 </div>
 
                 <div className="flex items-end mb-3">
@@ -132,11 +131,12 @@ export const RaffleCard = (raffle: RaffleCardProps) => {
                     <Clock className="w-3 h-3 mr-1 text-indigo-600" />
                     {displayData.deadline}
                 </div>
+
                 <button
                     className={buttonContent.className}
                     onClick={() => {
-                        if (!buttonContent.disabled && !raffle.isSubmitting) {
-                            raffle.onParticipate?.(raffle.id);
+                        if (!buttonContent.disabled) {
+                            participate(raffle.id);
                         }
                     }}
                     disabled={buttonContent.disabled}
